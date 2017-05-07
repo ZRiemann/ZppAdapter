@@ -1,0 +1,16 @@
+# 170428
+1. 基准req-rep服务测试
+   *p 进程数 t 每进程的线程数
+   client      server     request    time      partten
+   1           1p-1t      10000      1sec      req-rep
+   1           1p-1t      500000     58~74sec  req-rep
+   1	       1p-1t	  99999999   14050     req-rep
+   1           2p-1t	  500000     ?	       req-rep
+   1           1p-2t      500000     ?	       req-rep
+   1	       2p-1	  10000	     5sec      req_percon
+#170502
+1. LRU 模块实现
+2. 消息组模块
+3. CMS/EMS/ACS/DAG/DPS 消息流接口定义
+4. 抽象类及接口定义
+
