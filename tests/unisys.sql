@@ -9,6 +9,7 @@ type INT UNSIGNED NOT NULL comment '设备类型',
 ip VARCHAR(64) comment '设备IPv4/IPv6',
 port INT UNSIGNED comment '设备应答端口',
 name VARCHAR(64) CHARSET utf8 comment '设备名称',
+attach_id INT UNSIGNED comment '关联设备ID',
 attr BLOB comment '设备属性'
 )comment '设备总表';
 

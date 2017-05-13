@@ -89,15 +89,16 @@ void svr_rep(int argc, char **argv){
 void cli_req(int argc, char **argv){
   int total = atoi(argv[2]);
   int i;
-  time_t old;
+
   int initOk;
+  void *tick;
   printf("run req client, with %d reqs\n", total);
   ZmqSocket req(ZMQ_REQ);
   for(i = 3; i<argc; ++i){
     req.Connect(argv[i]);
   }
   //sleep(2);
-  time(&old);
+  tick = ztick();
   char buf[32];
   for(i=0; i<total; ++i){
     ZmqMsg msgRecv;
@@ -107,8 +108,7 @@ void cli_req(int argc, char **argv){
     req.MsgSend(&msgSend, 0);
     req.MsgRecv(&msgRecv, 0);
   }
-  old = time(NULL) - old;
-  printf("totoal use %d seconds\n", (int)old);
+  ztock(tick, NULL,NULL);
 
 }
 
@@ -116,13 +116,14 @@ void cli_req_percon(int argc, char **argv){
   int total = atoi(argv[2]);
   int i;
   int j = 3;
-  time_t old;
   int initOk;
+  void *tick;
   printf("run req client, with %d reqs\n", total);
-  ztrace_ctl(0x0c);
+  //ztrace_ctl(0x0c);
   //sleep(2);
-  time(&old);
+
   char buf[32];
+  tick = ztick();
   for(i=0; i<total; ++i){
     ZmqSocket req(ZMQ_REQ);
     j = 3 == j ? 4 : 3;
@@ -134,25 +135,23 @@ void cli_req_percon(int argc, char **argv){
     req.MsgSend(&msgSend, 0);
     req.MsgRecv(&msgRecv, 0);
   }
-  old = time(NULL) - old;
-  ztrace_ctl(0xff);
-  printf("totoal use %d seconds\n", (int)old);
-
+  ztock(tick, NULL, NULL);
 }
 
 void cli_lazy_pirate(int argc, char **argv){
   int total = atoi(argv[2]);
   int i;
-  time_t old;
   int initOk;
+  void *tick;
   printf("run req client, with %d reqs\n", total);
   ZmqSocket req(ZMQ_REQ);
   for(i = 3; i<argc; ++i){
     req.Connect(argv[i]);
   }
   //sleep(2);
-  time(&old);
+
   char buf[32];
+  tick = ztick();
   for(i=0; i<total; ++i){
     ZmqMsg msgRecv;
     sprintf(buf,"%d",i);
@@ -160,8 +159,7 @@ void cli_lazy_pirate(int argc, char **argv){
 
     req.LazyPirateReq(&msgSend, &msgRecv, 2,2);
   }
-  old = time(NULL) - old;
-  printf("totoal use %d seconds\n", (int)old);
+  ztock(tick, NULL, NULL);
 }
 
 void svr_pub(int argc, char **argv){

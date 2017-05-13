@@ -6,8 +6,24 @@
 using namespace std;
 using namespace uns;
 
-void listmsg(const Msg &msg){
+void listmsg(Msg &msg){
+  int i;
   printf("src:\t%08x\ndest:\t%08x\noprt:\t%08x\n", msg.src(), msg.dest(), msg.operate());
+
+  //test memory change
+  int size = msg.res_size();
+  for(i = 0;  i<size; i++){
+    const google::protobuf::Any& res = msg.res(i);
+    ::google::protobuf::Any* res1 = msg.mutable_res(i);
+    if(res1->Is<AddrIp>()){
+      AddrIp addr;
+      res1->UnpackTo(&addr);
+      addr.set_host("linux-pc1-modify");
+      res1->PackFrom(addr);
+    }
+    printf("res: %p res1: %p\n", &res,  res1);
+  }
+  
   for (const google::protobuf::Any& resource : msg.res()){
     if (resource.Is<AddrIp>()) {
       AddrIp addr;
@@ -41,6 +57,55 @@ int main(int argc, char **argv){
     cerr<<"Failed to parse msg."<<endl;
   }else{
     listmsg(msg1);
+#if 1 // test merg from
+    // merge no any
+    uns::AddrIp addr1;
+    uns::AddrIp addr2;
+    // stuff addr1 , addr2
+    addr1.set_type(1);
+    addr1.set_host("host1");
+    addr1.set_rep_port(1);
+    addr1.add_ip("1.1.1.1");
+    addr1.add_ip("11.11.11.11");
+    
+    addr2.set_type(2);
+    addr2.set_host("host2");
+    addr2.set_pull_port(2);
+    addr2.add_ip("2.2.2.2");
+    addr2.add_ip("1.1.1.1");
+    
+    cout<<"addr1 before merge:\n"<<addr1.DebugString()<<endl;
+    cout<<"addr2 before merge:\n"<<addr2.DebugString()<<endl;
+    addr1.MergeFrom(addr2);
+    cout<<"addr1 after merge:\n"<<addr1.DebugString()<<endl;
+    cout<<"addr2 after merge:\n"<<addr2.DebugString()<<endl;
+    // merge has any
+    
+#endif
+#if 0 // test sawp
+    // 结论: swap 是引用互换，效率极高
+    Msg msg0;
+    cout<<"msg1 DebugString:\n"<<msg1.DebugString()<<endl;
+    cout<<"msg0 DebugString:\n"<<msg0.DebugString()<<endl;
+    cout<<"msg0 IsInitialized: "<<msg0.IsInitialized()<<endl;
+    cout<<"msg1 IsInitialized: "<<msg1.IsInitialized()<<endl;
+    cout<<"msg0.Swap(&msg1)"<<endl;
+    msg0.Swap(&msg1);
+    cout<<"msg0 IsInitialized: "<<msg0.IsInitialized()<<endl;
+    cout<<"msg1 IsInitialized: "<<msg1.IsInitialized()<<endl;
+    cout<<"msg1 DebugString:\n"<<msg1.DebugString()<<endl;
+    cout<<"msg0 DebugString:\n"<<msg0.DebugString()<<endl;
+
+    std::string block;
+    msg0.SerializeToString(&block);
+    cout<<"block size<"<<block.size()<<">"<<endl;
+    
+    if(!msg1.ParseFromString(block)){
+      cerr<<"Failed to parse msg."<<endl;
+    }else{
+      cout<<"msg1 DebugStringxxx:\n"<<msg1.DebugString()<<endl;
+    }
+#endif
   }
   
   return 0;

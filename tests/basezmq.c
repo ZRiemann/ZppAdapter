@@ -108,7 +108,7 @@ void cli_req(int argc, char **argv){
     zmq_msg_send(&msg_send, req, 0);
 
     zmq_msg_recv(&msg_recv, req, 0);
-    printf("reply ok.\n");
+    //printf("reply ok.\n");
     zmq_msg_close(&msg_recv);
     zmq_msg_close(&msg_send);
   }

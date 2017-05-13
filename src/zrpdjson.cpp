@@ -55,8 +55,15 @@ RJson::RJson(Value *value, Document::AllocatorType *alc){
 
 RJson::~RJson(){
   if(needDel){
-    delete(val);
-    zdbgx(traceTitle, traceFlag, "~RJson() delete val<%p>", val);
+    if(doc){
+      zdbgx(traceTitle, traceFlag, "~RJson() delete doc<%p>...", val);
+      delete(doc);
+      zdbgx(traceTitle, traceFlag, "~RJson() delete doc<%p> OK", val);
+    }else{
+      zdbgx(traceTitle, traceFlag, "~RJson() delete val<%p>...", val);
+      delete(val);
+      zdbgx(traceTitle, traceFlag, "~RJson() delete val<%p> OK", val);
+    }
   }else{
     zdbgx(traceTitle, traceFlag, "~RJson()");
   }

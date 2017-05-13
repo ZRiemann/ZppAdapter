@@ -78,7 +78,7 @@ int MySql::SetOption(enum mysql_option option, const void *arg){
 }
 
 int MySql::Connect(const char *user, const char *passwd, const char *db, const char *host,  unsigned int port){
-  zmsg_mysql("connect(user:%s pwd:%s db:%s host:%s port:%d", user, passwd, db, host, port);
+  zmsg_mysql("connect(user:%s pwd:%s db:%s host:%s port:%d)", user, passwd, db, host, port);
   if(NULL == mysql_real_connect(mysql, host, user, passwd, db, port, NULL, 0)){
     const char *err = mysql_error(mysql);
     zerr_mysql("%s", err);
@@ -88,6 +88,7 @@ int MySql::Connect(const char *user, const char *passwd, const char *db, const c
 
 int MySql::Query(const char *query){
   int ret;
+  ZDBG("%s", query);
   if(-1 == (ret = mysql_query(mysql, query))){
     const char *err = mysql_error(mysql);
     ZERR("%s", err);    
@@ -95,7 +96,7 @@ int MySql::Query(const char *query){
   return ret;
 }
 
-uint64_t MySql::GetRows(){
+uint64_t MySql::GetAftRows(){
   uint64_t rows = (uint64_t)mysql_affected_rows(mysql);
   zdbg_mysql("affected row<%lu>", rows);
   return rows;

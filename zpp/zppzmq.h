@@ -67,6 +67,7 @@ namespace z{
     int Subscribe(const char *filter, int len);
     int Unsubscribe(const char *filter, int len);
   public:
+    static int traceFlag;
     static void *s_ctx; ///< zmq context
 
     void *sockHandle; ///< an opaque handle to the socket

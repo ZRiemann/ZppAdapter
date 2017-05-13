@@ -24,19 +24,14 @@
 #tracering.o type.o list.o container.o framework.o socket.o filesys.o convert.o
 #ZIT_TST=tutility.o main.o tbase.o tthread.o
 #ZIT_FLAGS='-lpthread -lrt -D_REENTRANT'
-ZIT_LIB = zppzmq.o tstzmq.o zppmain.o object.o tstframework.o zrpdjson.o zppmysql.o
+ZPP_LIB = zppzmq.o object.o zrpdjson.o zppmysql.o
+ZPP_OUT = tstzmq.o zppmain.o tstframework.o
 .PHONY : all
-all : $(BIN_DIR)/zpp_test
-$(BIN_DIR)/zpp_test : $(ZIT_LIB)
-	$(CC) $(GDB)  -o $@ $^ -lmysqlclient -lzit -lzmq -lrt
-#	$(CC) $(GDB) -shared -fPIC -Wl,-soname,libzit.so.0 -o $@ $^
+all : $(BIN_DIR)/zpp_test $(BIN_DIR)/$(ZPP_VER)
 
-#.PHONY : test
-#test : $(ZIT_TST)
-#	$(CC) $(GDB) $^ -o $(BIN_DIR)/zit_test -lzit -pthread -lrt
-# error follow, can not work on ubuntu. 
-#	$(CC) $(GDB) -lpthread -lrt -D_REENTRANT -lzit $^ -o $(BIN_DIR)/zit_test
+$(BIN_DIR)/zpp_test : $(ZPP_OUT) $(BIN_DIR)/$(ZPP_VER)
+	$(CC) $(GDB)  -o $@ $(ZPP_OUT) -L../bin -lzpp -lmysqlclient -lzit -lzmq -lrt
 
-#.PHONY : arm_test
-#arm_test : $(ZIT_TST)
-#	$(CC) $(GDB) $^ -o $(BIN_DIR)/arm_zit_test -L $(BIN_DIR) -lzit -pthread -lrt
+
+$(BIN_DIR)/$(ZPP_VER) : $(ZPP_LIB)
+	ar crs $@ $^

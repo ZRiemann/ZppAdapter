@@ -31,12 +31,14 @@ namespace z{
     inline int SelectDb(const char *db){return mysql_select_db(mysql, db);}
     inline int SetCharSet(const char *set){return mysql_set_character_set(mysql, set);}// "utf8"
     
-    inline int StoreResult(){result = mysql_store_result(mysql); return result?1:0;}
-    inline int UseResult(){result = mysql_use_result(mysql); return result?1:0;}
-    
-    uint64_t GetRows();
-    
-    inline void FreeResult(){if(result){mysql_free_result(result);}}
+    inline bool StoreResult(){result = mysql_store_result(mysql); return result?1:0;}
+    inline bool UseResult(){result = mysql_use_result(mysql); return result?1:0;}
+    uint32_t GetFields(){return (uint32_t)mysql_num_fields(result);}
+    uint64_t GetAftRows();
+    uint64_t GetNumRows(){return (uint64_t)mysql_num_rows(result);}
+    unsigned long *FetchLens(){return mysql_fetch_lengths(result);}
+    inline MYSQL_ROW FetchRow(){return mysql_fetch_row(result);}
+    inline void FreeResult(){if(result){mysql_free_result(result); result = NULL;}}
     //int CreateDb(const char *db);
     //int DropDb(const char *db);
       //public: //预处理语句

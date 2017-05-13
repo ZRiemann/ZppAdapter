@@ -8,11 +8,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define zdbg_zmq(fmt, ...) zdbgx(0, ZmqSocket::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zmsg_zmq(fmt, ...) zmsgx(0, ZmqSocket::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zwar_zmq(fmt, ...) zwarx(0, ZmqSocket::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zerr_zmq(fmt, ...) zerrx(0, ZmqSocket::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zinf_zmq(fmt, ...) zinfx(0, ZmqSocket::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+
+#define ZMQERR() ZERR("%s", zmq_strerror(errno))
+#define ZTRACE_ZMQ 1
 using namespace z;
 
-#define ZTRACE_ZMQ 1 // 控制是否输出zmq调试信息
-#define ZMQERR() ZERR("%s", zmq_strerror(errno))
-
+int ZmqSocket::traceFlag = 0xfe;
 void *ZmqSocket::s_ctx = NULL;
 int ZmqSocket::ZmqInit(bool setLinger0){
   int major, minor,  patch;
@@ -23,7 +29,7 @@ int ZmqSocket::ZmqInit(bool setLinger0){
   }
   s_ctx = zmq_ctx_new();
   if(setLinger0){
-    ZMSG("Set zmq context linger timeout 0");
+    zmsg_zmq("Set zmq context linger timeout 0");
     zmq_ctx_set(s_ctx, ZMQ_BLOCKY, false);
   }
   if(NULL == s_ctx){
@@ -31,7 +37,7 @@ int ZmqSocket::ZmqInit(bool setLinger0){
     return ZFAIL;
   }
 #if ZTRACE_ZMQ
-  ZDBG("ctx<%p> = ZmqInit(setLinger0:%d) version%d.%d.%d", s_ctx, setLinger0, major, minor, patch);
+  zdbg_zmq("ctx<%p> = ZmqInit(setLinger0:%d) version%d.%d.%d", s_ctx, setLinger0, major, minor, patch);
 #endif
   return ZOK;
 }
@@ -47,7 +53,7 @@ int ZmqSocket::ZmqFini(){
     }
   }
 #if ZTRACE_ZMQ
-  ZDBG("ctxTerm<ctx:%p, ret:%d>", s_ctx, ret);
+  zdbg_zmq("ctxTerm<ctx:%p, ret:%d>", s_ctx, ret);
 #endif
   return ZOK;
 }
@@ -67,7 +73,7 @@ ZmqSocket::ZmqSocket(int _sockType){
   SetLinger(0);
   
 #if ZTRACE_ZMQ
-  ZDBG("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
+  zdbg_zmq("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
 #else
   if(NULL == sockHandle){
     ZERR("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
@@ -90,7 +96,7 @@ ZmqSocket::ZmqSocket(int _sockType, const char *id){
   SetLinger(0);
   SetId(id, strlen(id));
 #if ZTRACE_ZMQ
-  ZDBG("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
+  zdbg_zmq("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
 #else
   if(NULL == sockHandle){
     ZERR("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
@@ -100,7 +106,7 @@ ZmqSocket::ZmqSocket(int _sockType, const char *id){
 ZmqSocket::~ZmqSocket(){
   zmq_close(sockHandle);
 #if ZTRACE_ZMQ
-  ZDBG("close<handle:%p ptr:%p>", sockHandle, this);
+  zdbg_zmq("close<handle:%p ptr:%p>", sockHandle, this);
 #endif
 }
 
@@ -233,12 +239,12 @@ int ZmqSocket::SetHwm(int is_send, int hwm){
     option_name = ZMQ_SNDHWM;
     name = "SendHwm";
   }
-  ZDBG("Set %s option: %d", name, hwm);
+  zmsg_zmq("Set %s option: %d", name, hwm);
   return SetOpt(option_name, &hwm, sizeof(hwm));
 }
 
 int ZmqSocket::SetLinger(int linger){
-  ZDBG("Set Linger option: %d", linger);
+  zmsg_zmq("Set Linger option: %d", linger);
   return SetOpt(ZMQ_LINGER, &linger, sizeof(linger));
 }
 
@@ -246,7 +252,7 @@ int ZmqSocket::SetId(const char *id, int len){
   char buf[128];
   int ln = len;
   zdump_mix(buf, 128, (const unsigned char*)id, &ln);
-  ZDBG("Set socket ID: %s", buf);
+  zmsg_zmq("Set socket ID: %s", buf);
   return SetOpt(ZMQ_IDENTITY, id, len);
 }
 
@@ -258,7 +264,7 @@ int ZmqSocket::Subscribe(const char *filter, int len){
   char buf[128];
   int ln = len;
   zdump_mix(buf, 128, (const unsigned char*)filter, &ln);
-  ZMSG("Subscribe :%s", buf);
+  zmsg_zmq("Subscribe :%s", buf);
   return SetOpt(ZMQ_SUBSCRIBE, filter, len);
 }
 
@@ -266,7 +272,7 @@ int ZmqSocket::Unsubscribe(const char *filter, int len){
   char buf[128];
   int ln = len;
   zdump_mix(buf, 128, (const unsigned char*)filter, &ln);
-  ZMSG("Unsubscribe :%s", buf);
+  zmsg_zmq("Unsubscribe :%s", buf);
   return SetOpt(ZMQ_UNSUBSCRIBE, filter, len);
 }
 
@@ -309,7 +315,7 @@ ZmqMsg::ZmqMsg(int *initOk, void* data, size_t size, zmq_free_fn *ffn, void*hint
 }
 ZmqMsg::~ZmqMsg(){
 #if ZTRACE_ZMQ
-  //ZDBG("%d = zmq_msg_close(%p)", zmq_msg_close(&msg), &msg);
+  //zdbg_zmq("%d = zmq_msg_close(%p)", zmq_msg_close(&msg), &msg);
   zmq_msg_close(&msg);
 #else
   zmq_msg_close(&msg);
@@ -339,7 +345,7 @@ size_t ZmqMsg::Size(){
 }
 
 void ZmqMsg::Dump(int isSend){
-  if(!(g_ztrace_flag & ZTRACE_FLAG_DBG)){
+  if(!(ZmqSocket::traceFlag & ZTRACE_FLAG_MSG)){
     return; // control debug
   }
   char buf[4096] = {0};
@@ -350,7 +356,7 @@ void ZmqMsg::Dump(int isSend){
   
   while(len){
     zdump_mix(buf, 3900, data+offset, &len);
-    zdbg("%s zmq_msg<size:%d>: %s", isSend ? "Send" : "Recv", size, buf);
+    zmsg_zmq("%s zmq_msg<size:%d>: %s", isSend ? "Send" : "Recv", size, buf);
     offset += len;
     len = size - offset;
   }

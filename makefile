@@ -7,16 +7,16 @@ OUT_DIR=$(ROOT_DIR)/$(OUT_NAME)
 OBJS_DIR=$(OUT_DIR)/obj
 BIN_DIR=$(OUT_DIR)/bin
 GDB=-g
-#GDB=
-#INST_DIR=/usr/local/lib
-#ZIT_NAME=libzit.so
-#ZIT_VER=$(ZIT_NAME).0.0.0
+#GDB=-O3
+INST_DIR=/usr/local/lib
+ZPP_NAME=libzpp
+ZPP_VER=$(ZPP_NAME).a
 CFLAGS='$(GDB) -Wall -Werror -I$(ROOT_DIR)'
 #CFLAGS='$(GDB) -fPIC -Wall -Werror -I$(ROOT_DIR)'
 # for test flag
 CFLAGST = '$(GDB) -Wall -Werror -I$(ROOT_DIR)'
 # **** export variable to sub makefiles ***
-export CC CFLAGS OBJS_DIR BIN_DIR GDB
+export CC CFLAGS OBJS_DIR BIN_DIR GDB ZPP_VER
 
 define make_obj
 	@mkdir -p $(OUT_DIR)
@@ -27,17 +27,12 @@ define make_obj
 	@./makeworker . $(OBJS_DIR) .cpp $(CC) $(CFLAGS)
 endef
 
-#define install_zit
-#	@rm -f $(INST_DIR)/$(ZIT_NAME)* &&\
-#	rm -fr /usr/local/include/zit && \
-#	cp -r zit /usr/local/include/ && \
-#	cp $(BIN_DIR)/$(ZIT_VER) $(INST_DIR) &&\
-#	cd $(INST_DIR) &&\
-#	ldconfig -n ./ &&\
-#	ldconfig &&\
-#	ln -s $(ZIT_NAME).0 $(ZIT_NAME) &&\
-#	cd -
-#endef
+define install_zpp
+	rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
+	rm -fr /usr/local/include/zpp && \
+	cp -r zpp /usr/local/include/ && \
+	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR) && ldconfig
+endef
 
 .PHONY : all
 all: makezit makeout
@@ -61,12 +56,14 @@ makeout:
 .PHONY:clean
 clean:
 	@rm -fr $(OUT_DIR) &&\
-	rm -f makeworker
+	rm -f makeworker tests/protobuf/*.pb* tests/protobuf/reader tests/protobuf/write
 
-#.PHONY:install
-#install :
-#	$(install_zit)
+.PHONY:install
+install :
+	$(install_zpp)
 
-#.PHONY:uninstall
-#uninstall:
-#	@rm -f $(INST_DIR)/$(ZIT_NAME)* && ldconfig && rm -fr /usr/local/include/zit
+.PHONY:uninstall
+uninstall:
+	@rm -f $(INST_DIR)/$(ZIT_NAME)* &&\
+	ldconfig &&\
+	rm -fr /usr/local/include/zpp

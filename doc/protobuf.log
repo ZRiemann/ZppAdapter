@@ -1,0 +1,1 @@
+1. MergeFrom用作合并的含义，对optional字段(忽略required字段)是set语义，而对于repeated,extensions,unknown字段都是add语义
