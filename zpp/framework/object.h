@@ -10,6 +10,7 @@
 #include <zit/base/type.h>
 #include <vector>
 #include <map>
+#include <stdio.h>
 
 #define ZUSE_OBJ_CNT 1 // 启用对象计数功能，可辅助排查内存泄漏
 
@@ -17,6 +18,7 @@
 #include <zit/base/atomic.h>
 #endif
 
+#define ZDEL(ptr) do{delete (ptr); (ptr)=NULL;}while(0)
 namespace z{
   typedef uint32_t otype_t;
   typedef uint32_t oid_t;
@@ -84,7 +86,10 @@ namespace z{
 	pa = new T;
 	if(pa){
 	  (*Object::pdyn_map)[pa->z::Object::type] = create;
+	  printf("register object<%08x> creater<%p>\n", pa->z::Object::type, create);
 	  delete pa;
+	}else{
+	  printf("register failed.\n");
 	}
       }
     };
@@ -132,6 +137,6 @@ extern const int DEV_STAT_EXCP;// 3 // 异常状态
 #define DEV_IS_INIT(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_INIT)
 #define DEV_IS_RUN(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_RUN)
 #define DEV_IS_EXCP(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_EXCP)
-#define ARC_IS_LOAD(hint) hint
+
 }
 #endif

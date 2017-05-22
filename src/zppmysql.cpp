@@ -34,11 +34,11 @@
 #include <zpp/zppmysql.h>
 #include <zit/base/trace.h>
 
-#define zdbg_mysql(fmt, ...) zdbgx(0, MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define zmsg_mysql(fmt, ...) zmsgx(0, MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define zwar_mysql(fmt, ...) zwarx(0, MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define zerr_mysql(fmt, ...) zerrx(0, MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define zinf_mysql(fmt, ...) zinfx(0, MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zdbg_mysql(fmt, ...) zdbgx(MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zmsg_mysql(fmt, ...) zmsgx(MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zwar_mysql(fmt, ...) zwarx(MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zerr_mysql(fmt, ...) zerrx(MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define zinf_mysql(fmt, ...) zinfx(MySql::traceFlag, "[ln:%04d fn:%s]\t" fmt, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 
 using namespace z;
 

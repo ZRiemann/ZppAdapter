@@ -24,7 +24,7 @@ RJson::RJson(){
     val = doc;
     needDel = true;
   }
-  zdbgx(traceTitle, traceFlag, "RJson() val<%p>", val);
+  zdbgx(traceFlag, "%s RJson() val<%p>", traceTitle, val);
 }
 
 RJson::RJson(Value *value, Document::AllocatorType *alc){
@@ -56,16 +56,16 @@ RJson::RJson(Value *value, Document::AllocatorType *alc){
 RJson::~RJson(){
   if(needDel){
     if(doc){
-      zdbgx(traceTitle, traceFlag, "~RJson() delete doc<%p>...", val);
+      zdbgx(traceFlag, "~RJson() delete doc<%p>...", val);
       delete(doc);
-      zdbgx(traceTitle, traceFlag, "~RJson() delete doc<%p> OK", val);
+      zdbgx(traceFlag, "~RJson() delete doc<%p> OK", val);
     }else{
-      zdbgx(traceTitle, traceFlag, "~RJson() delete val<%p>...", val);
+      zdbgx(traceFlag, "~RJson() delete val<%p>...", val);
       delete(val);
-      zdbgx(traceTitle, traceFlag, "~RJson() delete val<%p> OK", val);
+      zdbgx(traceFlag, "~RJson() delete val<%p> OK", val);
     }
   }else{
-    zdbgx(traceTitle, traceFlag, "~RJson()");
+    zdbgx(traceFlag, "~RJson()");
   }
 
 }
@@ -77,7 +77,7 @@ int RJson::LoadFile(const char *file){
     if(!file || !doc){
       break;
     }else{
-      zmsgx(traceTitle, traceFlag, "LoadFile(%s)", file);
+      zmsgx(traceFlag, "LoadFile(%s)", file);
     }
     
     fp = fopen(file, "r");//b"); // 非 Windows 平台使用 "r"
@@ -112,7 +112,7 @@ int RJson::SaveFile(const char *file){
     if(!file || !doc){
       break;
     }else{
-      zmsgx(traceTitle, traceFlag, "SaveFile(%s)", file);
+      zmsgx(traceFlag, "SaveFile(%s)", file);
     }
 
     fp = fopen(file, "w");//b"); // 非 Windows 平台使用 "r"
@@ -164,7 +164,7 @@ int RJson::SaveString(std::string &str){
   Writer<StringBuffer> writer(buffer);
   doc->Accept(writer);
   str = buffer.GetString();
-  zmsgx(traceTitle, traceFlag, "SaveString:\n%s", str.c_str());
+  zmsgx(traceFlag, "SaveString:\n%s", str.c_str());
   return ZOK;
 }
 
@@ -337,5 +337,5 @@ void RJson::Dump(){
   StringBuffer buffer;
   Writer<StringBuffer> writer(buffer);
   doc->Accept(writer);
-  zinfx(traceTitle, traceFlag, "%s", buffer.GetString());
+  zinfx(traceFlag, "%s", buffer.GetString());
 }

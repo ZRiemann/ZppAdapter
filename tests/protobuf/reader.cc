@@ -63,7 +63,7 @@ int main(int argc, char **argv){
     uns::AddrIp addr2;
     // stuff addr1 , addr2
     addr1.set_type(1);
-    addr1.set_host("host1");
+    //addr1.set_host("host1");
     addr1.set_rep_port(1);
     addr1.add_ip("1.1.1.1");
     addr1.add_ip("11.11.11.11");
@@ -73,7 +73,23 @@ int main(int argc, char **argv){
     addr2.set_pull_port(2);
     addr2.add_ip("2.2.2.2");
     addr2.add_ip("1.1.1.1");
-    
+    //cout<<"addr1 pull_port: "<< addr1.field_count()<<endl;
+#if 1 // 获取字段属性
+    const google::protobuf::Descriptor* descriptor = addr1.GetDescriptor();
+    const google::protobuf::Reflection* reflection = addr1.GetReflection();
+    vector< const google::protobuf::FieldDescriptor * > vfd;
+    reflection->ListFields (addr1,  &vfd);
+    cout<<"addr1 vfd size: "<<vfd.size()<<endl;
+    for(int j = 0; j<vfd.size(); j++){
+      cout<<"addr vfd["<<j<<"] :"<<vfd[j]->number()<<endl;
+    }
+    cout<<"addr1 field_count(): "<< descriptor->field_count()<<endl;
+    for (int i = 0; i < descriptor->field_count(); ++i) {
+        const google::protobuf::FieldDescriptor* field = descriptor->field(i);
+        //bool has_field = reflection->HasField(addr1, field);
+	cout<<"field["<<i<<"] fieldsize:"<<reflection->FieldSize(addr1, field)<<endl;
+    }
+#endif
     cout<<"addr1 before merge:\n"<<addr1.DebugString()<<endl;
     cout<<"addr2 before merge:\n"<<addr2.DebugString()<<endl;
     addr1.MergeFrom(addr2);

@@ -12,6 +12,7 @@
 #include <rapidjson/writer.h>
 
 using namespace z;
+using namespace z::zmq;
 using namespace rapidjson;
 
 void mysql_base(int argc, char **argv);
@@ -23,21 +24,23 @@ void svr_rep(int argc, char **argv);
 void cli_req(int argc, char **argv);
 void cli_req_percon(int argc, char **argv);
 void cli_lazy_pirate(int argc, char **argv);
+void cli_connecter(int argc, char **argv); // test z::zmq::Connecter
 void svr_pub(int argc, char **argv);
 void cli_sub(int argc, char **argv);
 
 void tstzmq(int argc, char **argv){
-  z::ZmqSocket::ZmqInit();
-  printf("useage: basezmq svr_rep <port>\n"
-	 "useage: basezmq (notsupport)svr_rep_udp <port>\n"
-	 "useage: basezmq cli_req <request-num> <endpoints>\n"
-	 "useage: basezmq cli_req_percon <request-num> <endp1> <endp2>\n"
-	 "useage: basezmq cli_lazy_pirate <request-num> <endpoints...>\n"
-	 "useage: basezmq svr_pub <port> <interval> [<begin> <end>]\n"
-	 "useage: basezmq cli_sub <id/0> <endps> <end1> ... <endn> [<subs...>]\n"
-	 "\nusage: basezmq rjson_base\n"
-	 "useage: basezmq rjson_filewr\n"
-	 "\nusage: basezmq mysql_base\n"
+  Socket::Init();
+  printf("useage: zpp_test svr_rep <port>\n"
+	 "useage: zpp_test (notsupport)svr_rep_udp <port>\n"
+	 "useage: zpp_test cli_req <request-num> <endpoints>\n"
+	 "useage: zpp_test cli_req_percon <request-num> <endp1> <endp2>\n"
+	 "useage: zpp_test cli_lazy_pirate <request-num> <endpoints...>\n"
+	 "useage: zpp_test cli_connecter <request-num> <endp> <thread-num>"
+	 "useage: zpp_test svr_pub <port> <interval> [<begin> <end>]\n"
+	 "useage: zpp_test cli_sub <id/0> <endps> <end1> ... <endn> [<subs...>]\n"
+	 "\nusage: zpp_test rjson_base\n"
+	 "useage: zpp_test rjson_filewr\n"
+	 "\nusage: zpp_test mysql_base\n"
 	 );
   
   if(argc > 2 && strcmp("svr_rep", argv[1]) == 0){
@@ -60,24 +63,81 @@ void tstzmq(int argc, char **argv){
     rjson_filewr(argc, argv);
   }else if(argc >= 2 && strcmp("mysql_base", argv[1]) == 0){
     mysql_base(argc, argv);
+  }else if(argc >= 2 && strcmp("cli_connecter", argv[1]) == 0){
+    cli_connecter(argc, argv);
   }else{
     printf("not support argvs, exit now.\n");
   }
   
-  z::ZmqSocket::ZmqFini();
+  Socket::Fini();
+}
+
+
+zthr_ret_t proc_connecter(zvalue_t param){
+  zpair_t *pair = (zpair_t*)param;
+  zpair_t *pair1 = (zpair_t*)pair->value;
+
+  int request_num = pair->key.i;
+  Connecter *conn = (Connecter*)pair1->key.p;
+  char *endp = (char*)pair1->value;
+  int i = 0;
+  Socket *sock;
+  char buf[128];
+  int initOk;
+  zvalue_t tick = ztick();
+  for(; i<request_num; i++){
+    sock = conn->Connect(endp);
+    if(sock){
+      Msg msgRecv;
+      sprintf(buf,"%d",i);
+      Msg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
+      
+      sock->LazyPirateReq(&msgSend, &msgRecv, 2,2);
+    }else{
+      ZERRC(ZFUN_FAIL);
+    }
+  }
+  ztock(tick, 0, 0);
+  conn->Close();
+  return 0;
+}
+
+void cli_connecter(int argc, char **argv){
+  //zpp_test cli_connecter <request-num> <endp> <thread-num>
+  int i;
+  zpair_t pair;
+  zpair_t pair1;
+  
+  int thr_num = atoi(argv[4]);
+  Connecter *conn = new Connecter;
+  
+  zthr_id_t *thrs = (zthr_id_t*)calloc(thr_num, sizeof(zthr_id_t));
+
+  pair.key.i = atoi(argv[2]);
+  pair.value = (zvalue_t)&pair1;
+  pair1.key.p = (zptr_t)conn;
+  pair1.value = (zvalue_t)argv[3];
+  
+  for(i=0; i<thr_num; ++i){
+    zthread_create(&thrs[i],  proc_connecter, (zvalue_t)&pair);
+  }
+
+  for(i=0; i<thr_num; ++i){
+    zthread_join(&thrs[i]);
+  }
 }
 
 void svr_rep(int argc, char **argv){
   printf("run rep server, just echo back req\n");
   char endpoint[32];
-  ZmqSocket rep(ZMQ_REP);
+  Socket rep(ZMQ_REP);
   sprintf(endpoint, "tcp://*:%s", argv[2]);
   printf("bind %s\n", endpoint);
   rep.Bind(endpoint);
 
   while(1){
-    ZmqMsg msgRecv;
-    ZmqMsg msgSend;
+    Msg msgRecv;
+    Msg msgSend;
     
     rep.MsgRecv(&msgRecv, 0);
 
@@ -93,7 +153,7 @@ void cli_req(int argc, char **argv){
   int initOk;
   void *tick;
   printf("run req client, with %d reqs\n", total);
-  ZmqSocket req(ZMQ_REQ);
+  Socket req(ZMQ_REQ);
   for(i = 3; i<argc; ++i){
     req.Connect(argv[i]);
   }
@@ -101,9 +161,9 @@ void cli_req(int argc, char **argv){
   tick = ztick();
   char buf[32];
   for(i=0; i<total; ++i){
-    ZmqMsg msgRecv;
+    Msg msgRecv;
     sprintf(buf,"%d",i);
-    ZmqMsg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
+    Msg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
 
     req.MsgSend(&msgSend, 0);
     req.MsgRecv(&msgRecv, 0);
@@ -125,12 +185,12 @@ void cli_req_percon(int argc, char **argv){
   char buf[32];
   tick = ztick();
   for(i=0; i<total; ++i){
-    ZmqSocket req(ZMQ_REQ);
+    Socket req(ZMQ_REQ);
     j = 3 == j ? 4 : 3;
     req.Connect(argv[j]);
-    ZmqMsg msgRecv;
+    Msg msgRecv;
     sprintf(buf,"%d",i);
-    ZmqMsg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
+    Msg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
 
     req.MsgSend(&msgSend, 0);
     req.MsgRecv(&msgRecv, 0);
@@ -144,7 +204,7 @@ void cli_lazy_pirate(int argc, char **argv){
   int initOk;
   void *tick;
   printf("run req client, with %d reqs\n", total);
-  ZmqSocket req(ZMQ_REQ);
+  Socket req(ZMQ_REQ);
   for(i = 3; i<argc; ++i){
     req.Connect(argv[i]);
   }
@@ -153,9 +213,9 @@ void cli_lazy_pirate(int argc, char **argv){
   char buf[32];
   tick = ztick();
   for(i=0; i<total; ++i){
-    ZmqMsg msgRecv;
+    Msg msgRecv;
     sprintf(buf,"%d",i);
-    ZmqMsg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
+    Msg msgSend(&initOk, buf, strlen(buf), NULL,  NULL);
 
     req.LazyPirateReq(&msgSend, &msgRecv, 2,2);
   }
@@ -163,7 +223,7 @@ void cli_lazy_pirate(int argc, char **argv){
 }
 
 void svr_pub(int argc, char **argv){
-  ZmqSocket pub(ZMQ_PUB);
+  Socket pub(ZMQ_PUB);
 
   char endpoint[32];
   sprintf(endpoint, "tcp://*:%s", argv[2]);
@@ -194,7 +254,7 @@ void svr_pub(int argc, char **argv){
     // no filter
     while(1){
       sprintf(buf, "pub: %d", zrandin(100));
-      ZmqMsg msg(&initOk, buf, strlen(buf), NULL, NULL);
+      Msg msg(&initOk, buf, strlen(buf), NULL, NULL);
       pub.MsgSend(&msg, 0);
       zsleepms(interval);
     }
@@ -205,8 +265,8 @@ void svr_pub(int argc, char **argv){
       sprintf(buf, "pub: %d", zrandin(100));
       sprintf(id, "%d", zrandat(begin, end));
 
-      ZmqMsg msgId(&initOk, id, strlen(id), NULL, NULL);
-      ZmqMsg msgData(&initOk, buf, strlen(buf), NULL, NULL);
+      Msg msgId(&initOk, id, strlen(id), NULL, NULL);
+      Msg msgData(&initOk, buf, strlen(buf), NULL, NULL);
 
       pub.MsgSend(&msgId, 0);
       pub.MsgSend(&msgData, 0);
@@ -217,12 +277,12 @@ void svr_pub(int argc, char **argv){
 }
 
 void cli_sub(int argc, char **argv){
-  ZmqSocket *sub = NULL;
+  Socket *sub = NULL;
   
   if(argv[2][0] != '0'){
-    sub = new ZmqSocket(ZMQ_SUB, argv[2]);
+    sub = new Socket(ZMQ_SUB, argv[2]);
   }else{
-    sub = new ZmqSocket(ZMQ_SUB);
+    sub = new Socket(ZMQ_SUB);
   }
   
   int endps = atoi(argv[3]);
@@ -247,7 +307,7 @@ void cli_sub(int argc, char **argv){
   
   while(1){
     do{
-      ZmqMsg msg;
+      Msg msg;
       sub->MsgRecv(&msg, 0);      
     }while(1 == sub->IsMore());
   }

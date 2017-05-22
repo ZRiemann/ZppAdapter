@@ -50,7 +50,7 @@ int Object::CreateObj(ZOP_ARG){
   if(MapFind(*pdyn_map, type, dc)){
     ret  = dc(in, out, hint);
   }else{
-    ZWAR("Object type<%08x> not registed!");
+    ZWAR("Object type<%08x> not registed!", type);
   }
   return ret;
 }
