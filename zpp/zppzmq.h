@@ -69,7 +69,7 @@ namespace z{
       
     public:
       // lazy pirate pattern for ZMQ_REQ socket, return ZOK or Z*
-      int LazyPirateReq(Msg *msgReq, Msg *msgRep, int timeout_sec = 5, int trys = 2);
+      int LazyPirateReq(Msg *msgReq, Msg *msgRep, int timeout_ms = 5000, int trys = 1);
       int Reconnect(); // close and reconnect;
       
     public: // SUB interface

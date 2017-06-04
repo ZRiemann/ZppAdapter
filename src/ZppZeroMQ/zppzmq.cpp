@@ -164,7 +164,7 @@ namespace z{
       return ret;
     }
 
-    int Socket::LazyPirateReq(Msg *_msgReq, Msg *_msgRep, int timeout_sec, int trys){
+    int Socket::LazyPirateReq(Msg *_msgReq, Msg *_msgRep, int timeout_ms, int trys){
       int ret = ZTIMEOUT;
       int rc;
 
@@ -178,7 +178,7 @@ namespace z{
 	}
 
 	zmq_pollitem_t items[]={{sockHandle, 0, ZMQ_POLLIN, 0}};
-	rc = zmq_poll(items, 1, timeout_sec*1000);
+	rc = zmq_poll(items, 1, timeout_ms);
 	if(rc > 0){
 	  // reply
 	  //ret = MsgRecv(&msgRep, 0);
@@ -245,17 +245,19 @@ namespace z{
 
     int Socket::SetHwm(int is_send, int hwm){
       int option_name = ZMQ_RCVHWM;
+#if 0
       const char* name = "RecvHwm";
       if(is_send){
 	option_name = ZMQ_SNDHWM;
 	name = "SendHwm";
       }
       zmsg_zmq("Set %s option: %d", name, hwm);
+#endif
       return SetOpt(option_name, &hwm, sizeof(hwm));
     }
 
     int Socket::SetLinger(int linger){
-      zmsg_zmq("Set Linger option: %d", linger);
+      //zmsg_zmq("Set Linger option: %d", linger);
       return SetOpt(ZMQ_LINGER, &linger, sizeof(linger));
     }
 
@@ -335,7 +337,7 @@ namespace z{
 
 #if 1 // dump size
     void Msg::Dump(int isSend){
-      //zmsg_zmq("%s msg<size:%d, ptr:%p>", isSend ? "Send" : "Recv", Size(), Data());
+      zmsg_zmq("%s msg<size:%d, ptr:%p>", isSend ? "Send" : "Recv", Size(), Data());
     }
 #else // dump detail    
     void Msg::Dump(int isSend){
@@ -386,6 +388,9 @@ namespace z{
 	  }else{
 	    if(0 == sock->Connect(endpoint.c_str())){
 	      (*ep2sk)[endpoint] = sock; // map new sock
+	      if(sockType == ZMQ_PUSH){
+		zsleepms(500);//wait connect establish
+	      }
 	      zmsg_zmq("thr[%u] connect<type:%d endp:%s>", tid, sockType, endpoint.c_str());
 	    }else{
 	      //ZDEL(sock);
@@ -410,6 +415,9 @@ namespace z{
 	  }else{
 	    if(0 == sock->Connect(endpoint.c_str())){
 	      (*ep2sk)[endpoint] = sock; // map new sock
+	      if(sockType == ZMQ_PUSH){
+		zsleepms(500);//wait connect establish
+	      }
 	      zmsg_zmq("thr[%u] connect<type:%d endp:%s>", tid, sockType, endpoint.c_str());
 	    }else{
 	      //ZDEL(sock);
@@ -419,21 +427,20 @@ namespace z{
 	  }
 	}
       }
-
       return sock;
     }
     
     void Connecter::Close(){
       ep2sock *ep2sk = NULL;
       uint32_t tid = zthread_self();
-
       ZLOCK(&mtx);
       if(z::MapFind(tid2ep, tid, ep2sk)){
 	tid2ep.erase(tid); // erase tid
 	ZUNLOCK(&mtx);
-
 	z::MapClear(*ep2sk); // clear socks
 	delete ep2sk;
+      }else{
+	ZUNLOCK(&mtx);
       }
     }
     
