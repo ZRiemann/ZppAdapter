@@ -100,7 +100,7 @@ namespace z{
   typedef std::vector<Item*> Items;
   typedef Items::iterator ItemsIt;
   typedef Items::const_iterator ItemsCit;
-  typedef std::map<int, Item*> Mitem; // <type, obj*>
+  typedef std::map<z::oid_t, Item*> Mitem; // <oid, obj*>
   
   class Resource : public Object{
   public:
@@ -127,12 +127,17 @@ namespace z{
     virtual int Stop(ZOP_ARG);
   };
 
-extern const int DEV_STAT_MASK;// 0x00000003
-extern const int DEV_STAT_FINI;// 0 // 未初始化状态
-extern const int DEV_STAT_INIT;// 1 // 初始化状态
-extern const int DEV_STAT_RUN;//  2 // 运行状态
-extern const int DEV_STAT_EXCP;// 3 // 异常状态
+  extern int DEV_STAT_MASK;// 0x00000003
+  extern int DEV_STAT_FINI;// 0 // 未初始化状态
+  extern int DEV_STAT_INIT;// 1 // 初始化状态
+  extern int DEV_STAT_RUN;//  2 // 运行状态
+  extern int DEV_STAT_EXCP;// 3 // 异常状态
 
+#define DEV_SET_FINI(state)  (state = (state & (~z::DEV_STAT_MASK)) | z::DEV_STAT_FINI)
+#define DEV_SET_INIT(state) (state = (state & (~z::DEV_STAT_MASK)) | z::DEV_STAT_INIT)
+#define DEV_SET_RUN(state)  (state = (state & (~z::DEV_STAT_MASK)) | z::DEV_STAT_RUN)
+#define DEV_SET_EXCP(state) (state = (state & (~z::DEV_STAT_MASK)) | z::DEV_STAT_EXCP)
+ 
 #define DEV_IS_FINI(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_FINI)
 #define DEV_IS_INIT(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_INIT)
 #define DEV_IS_RUN(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_RUN)

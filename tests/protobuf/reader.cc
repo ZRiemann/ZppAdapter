@@ -57,7 +57,17 @@ int main(int argc, char **argv){
     cerr<<"Failed to parse msg."<<endl;
   }else{
     listmsg(msg1);
-#if 1 // test merg from
+#if 1 // test set_ip(i);
+    uns::AddrIp ip;
+    cout<<"ip size: "<<ip.ip_size()<<endl;
+    ip.add_ip("1.1.1.1");
+    cout<<"ip size: "<<ip.ip_size()<<endl;
+    ip.set_ip(0, "3.3.3.3");
+    cout<<"test set ip(3): \n"<<ip.DebugString()<<endl;
+    cout<<"get ip(3): "<<ip.ip(0)<<endl;
+#endif
+   
+#if 0 // test merg from
     // merge no any
     uns::AddrIp addr1;
     uns::AddrIp addr2;

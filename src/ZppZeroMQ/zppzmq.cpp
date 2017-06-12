@@ -337,7 +337,7 @@ namespace z{
 
 #if 1 // dump size
     void Msg::Dump(int isSend){
-      zmsg_zmq("%s msg<size:%d, ptr:%p>", isSend ? "Send" : "Recv", Size(), Data());
+      //zmsg_zmq("%s msg<size:%d, ptr:%p>", isSend ? "Send" : "Recv", Size(), Data());
     }
 #else // dump detail    
     void Msg::Dump(int isSend){

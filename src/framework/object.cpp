@@ -3,12 +3,13 @@
 #include <zpp/framework/mapfind.hpp>
 
 #define ZTRACE_OBJECT 1
+
 namespace z{
-const int DEV_STAT_MASK = 0x00000003;
-const int DEV_STAT_FINI = 0; // 未初始化状态
-const int DEV_STAT_INIT = 1; // 初始化状态
-const int DEV_STAT_RUN = 2; // 运行状态
-const int DEV_STAT_EXCP = 3; // 异常状态
+  int DEV_STAT_MASK = 0x00000003;
+  int DEV_STAT_FINI = 0; // 未初始化状态
+  int DEV_STAT_INIT = 1; // 初始化状态
+  int DEV_STAT_RUN = 2; // 运行状态
+  int DEV_STAT_EXCP = 3; // 异常状态
 }
 
 using namespace z;

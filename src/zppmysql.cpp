@@ -133,3 +133,23 @@ int MySql::DropDb(const char *db){
   return ret;
 }
 */
+#if 0
+// blob insert demo
+char query[1000],*end;
+ 
+end = strmov(query,"INSERT INTO test_table values(");
+*end++ = '\'';
+end += mysql_real_escape_string(&mysql, end,"What's this",11);
+*end++ = '\'';
+*end++ = ',';
+*end++ = '\'';
+end += mysql_real_escape_string(&mysql, end,"binary data: \0\r\n",16);
+*end++ = '\'';
+*end++ = ')';
+ 
+if (mysql_real_query(&mysql,query,(unsigned int) (end - query)))
+{
+   fprintf(stderr, "Failed to insert row, Error: %s\n",
+           mysql_error(&mysql));
+}
+#endif
