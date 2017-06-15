@@ -14,7 +14,8 @@ ZPP_VER=$(ZPP_NAME).a
 CFLAGS='$(GDB) -Wall -Werror -I$(ROOT_DIR)'
 #CFLAGS='$(GDB) -fPIC -Wall -Werror -I$(ROOT_DIR)'
 # for test flag
-CFLAGST = '$(GDB) -Wall -Werror -I$(ROOT_DIR)'
+#CFLAGST = '$(GDB) -Wall -Werror -I$(ROOT_DIR)'
+CPPFLAGS=$(GDB) -Wall -Werror -I.
 # **** export variable to sub makefiles ***
 export CC CFLAGS OBJS_DIR BIN_DIR GDB ZPP_VER
 
@@ -23,9 +24,11 @@ define make_obj
 	@mkdir -p $(OBJS_DIR)
 	@mkdir -p $(BIN_DIR)
 	@cp -u makeout.mk $(OBJS_DIR)/makefile
-	@gcc makeworker.c -o makeworker
-	@./makeworker . $(OBJS_DIR) .cpp $(CC) $(CFLAGS)
+	@make -C $(ROOT_DIR)/tests/protobuf
+	@./compiler.sh . make/obj g++ "$(CPPFLAGS)"
 endef
+#	@gcc makeworker.c -o makeworker
+#	@./makeworker . $(OBJS_DIR) .cpp $(CC) $(CFLAGS)
 
 define install_zpp
 	rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
