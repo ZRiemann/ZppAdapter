@@ -25,7 +25,7 @@ define make_obj
 	@mkdir -p $(BIN_DIR)
 	@cp -u makeout.mk $(OBJS_DIR)/makefile
 	@make -C $(ROOT_DIR)/tests/protobuf
-	@./compiler.sh . make/obj g++ "$(CPPFLAGS)"
+	@./compiler.sh . make/obj $CC "$(CPPFLAGS)"
 endef
 #	@gcc makeworker.c -o makeworker
 #	@./makeworker . $(OBJS_DIR) .cpp $(CC) $(CFLAGS)

@@ -27,7 +27,7 @@ compile(){
     fi    
 }
 
-for FILE in $(find $SRC_DIR -type f -name *.c -o -name *.C -o -name *.cc -o -name *.cpp -o -name *.CPP -o -name *.c++ -o -name *.cp -o -name *.cxx)
+for FILE in $(find $SRC_DIR -type f -name \*.c -o -name \*.C -o -name \*.cc -o -name \*.cpp -o -name \*.CPP -o -name \*.c++ -o -name \*.cp -o -name \*.cxx)
 do
     NAME=${FILE##*/}
     OBJ=$OBJ_DIR/${NAME%.*}.o
