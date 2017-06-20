@@ -2,7 +2,7 @@
 #include <zit/base/trace.h>
 #include <zpp/framework/mapfind.hpp>
 
-#define ZTRACE_OBJECT 1
+#define ZTRACE_OBJECT 0
 
 namespace z{
   int DEV_STAT_MASK = 0x00000003;

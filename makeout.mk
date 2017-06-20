@@ -25,7 +25,7 @@
 #ZIT_TST=tutility.o main.o tbase.o tthread.o
 #ZIT_FLAGS='-lpthread -lrt -D_REENTRANT'
 ZPP_LIB = zppzmq.o object.o zrpdjson.o zppmysql.o
-ZPP_OUT = tstzmq.o zppmain.o tstframework.o
+ZPP_OUT = tstzmq.o zppmain.o tstframework.o 
 .PHONY : all
 all : $(BIN_DIR)/zpp_test $(BIN_DIR)/$(ZPP_VER)
 
