@@ -1,34 +1,37 @@
 #top level makefile
+ifeq ($(VER), debug)
+	GDB=-g
+else ifeq ($(VER), release)
+	GDB=-O3
+else
+$(warning default release module)
+$(warning useage: make VER={debug|release})
+	VER=release
+	GDB=-O3
+endif
 
 CC=g++
+BIN_NAME=$(VER)
 ROOT_DIR=$(shell pwd)
 OUT_NAME=make
 OUT_DIR=$(ROOT_DIR)/$(OUT_NAME)
-OBJS_DIR=$(OUT_DIR)/obj
-BIN_DIR=$(OUT_DIR)/bin
-#GDB=-g
-GDB=-O3
+OBJS_DIR=$(OUT_NAME)/$(BIN_NAME)_obj
+BIN_DIR=$(OUT_NAME)/$(BIN_NAME)
 INST_DIR=/usr/local/lib
 ZPP_NAME=libzpp
 ZPP_VER=$(ZPP_NAME).a
-CFLAGS='$(GDB) -Wall -Werror -I$(ROOT_DIR)'
-#CFLAGS='$(GDB) -fPIC -Wall -Werror -I$(ROOT_DIR)'
-# for test flag
-#CFLAGST = '$(GDB) -Wall -Werror -I$(ROOT_DIR)'
-CPPFLAGS=$(GDB) -Wall -Werror -I.
+CFLAGS=$(GDB) -Wall -Werror
 # **** export variable to sub makefiles ***
-export CC CFLAGS OBJS_DIR BIN_DIR GDB ZPP_VER
+export CC CFLAGS BIN_DIR BIN_NAME GDB ZPP_VER VER
 
 define make_obj
-	@mkdir -p $(OUT_DIR)
+	@mkdir -p $(OUT_NAME)
 	@mkdir -p $(OBJS_DIR)
 	@mkdir -p $(BIN_DIR)
 	@cp -u makeout.mk $(OBJS_DIR)/makefile
 	@make -C $(ROOT_DIR)/tests/protobuf
-	@./compiler.sh . make/obj $CC "$(CPPFLAGS)"
+	@./compiler.sh . $(OBJS_DIR) $(CC) "$(CFLAGS)"
 endef
-#	@gcc makeworker.c -o makeworker
-#	@./makeworker . $(OBJS_DIR) .cpp $(CC) $(CFLAGS)
 
 define install_zpp
 	rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
@@ -44,17 +47,7 @@ makezit:
 	$(make_obj)
 makeout:
 	@make -C $(OBJS_DIR)
-	@make -C $(ROOT_DIR)/tests
-
-#.PHONY : test
-#test :
-#	@./makeworker tests $(OBJS_DIR) .cpp $(CC) $(CFLAGST) &&\
-#	make -C $(OBJS_DIR) test
-
-#.PHONY : arm_test
-#arm_test :
-#	@./makeworker tests $(OBJS_DIR) .cpp $(CC) $(CFLAGST) &&\
-#	make -C $(OBJS_DIR) arm_test
+	@make -C tests
 
 .PHONY:clean
 clean:
@@ -67,6 +60,5 @@ install :
 
 .PHONY:uninstall
 uninstall:
-	@rm -f $(INST_DIR)/$(ZIT_NAME)* &&\
-	ldconfig &&\
+	@rm -f $(INST_DIR)/$(ZPP_VER) &&\
 	rm -fr /usr/local/include/zpp
