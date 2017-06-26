@@ -1,4 +1,5 @@
 #include <zpp/framework/object.h>
+#include <zpp/framework/crtp_obj.hpp>
 #include <zit/base/trace.h>
 #include <zpp/framework/mapfind.hpp>
 
@@ -56,7 +57,7 @@ int Object::CreateObj(ZOP_ARG){
   return ret;
 }
 std::map<otype_t, zoperate>* Object::pdyn_map;
-
+std::map<otype_t, zoperate> *z::crtp::MapObj::pdyn_map;
 #if ZUSE_OBJ_CNT
 uint32_t Object::obj_cnt;
 #endif

@@ -1,6 +1,5 @@
 #include <zit/base/type.h>
 #include <zit/base/error.h>
-#include <zit/base/trace.h>
 #include <zit/base/time.h>
 #include <zit/thread/thread.h>
 #include <zpp/framework/mapfind.hpp>
@@ -19,7 +18,7 @@ namespace z{
 #define zinf_zmq(fmt, ...) zinfx(Socket::traceFlag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,traceTitle, ##__VA_ARGS__)
     
 #define ZMQERR() ZERR("%s", zmq_strerror(errno))
-#define ZTRACE_ZMQ 1
+
     
     int Socket::traceFlag = 0xfe;
     void *Socket::s_ctx = NULL;
@@ -139,7 +138,8 @@ namespace z{
       ZMSG("zmq_connect(%p, %s)=%d", sockHandle, endpoint,ret);
       return ret;
     }
-    
+      
+#if 0
     int Socket::MsgSend(Msg *msg, int flags){
       int ret;
 #if ZTRACE_ZMQ
@@ -163,7 +163,8 @@ namespace z{
 #endif
       return ret;
     }
-
+#endif // if 0/1
+      
     int Socket::LazyPirateReq(Msg *_msgReq, Msg *_msgRep, int timeout_ms, int trys){
       int ret = ZTIMEOUT;
       int rc;
@@ -334,12 +335,7 @@ namespace z{
       zmq_msg_close(&msg);
 #endif
     }
-
-#if 1 // dump size
-    void Msg::Dump(int isSend){
-      //zmsg_zmq("%s msg<size:%d, ptr:%p>", isSend ? "Send" : "Recv", Size(), Data());
-    }
-#else // dump detail    
+#if (!ZINLINE_DUMP) // inline
     void Msg::Dump(int isSend){
       if(!(Socket::traceFlag & ZTRACE_FLAG_MSG)){
 	return; // control debug
@@ -361,7 +357,7 @@ namespace z{
 	len = size - offset;
       }
     }
-#endif
+#endif // if 0/1
 
     Connecter::Connecter(){
       zmutex_init(&mtx);

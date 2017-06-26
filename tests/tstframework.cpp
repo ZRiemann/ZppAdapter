@@ -1,11 +1,7 @@
 #include "tstframework.h"
-void tstframework(int argc, char **argv){
-
-}
-
-#if 0
+#if 1
 #include <zpp/framework/object.h>
-#include <zpp/framework/unitsys_defs.h>
+#include <zpp/framework/crtp_obj.hpp>
 #include <zit/base/trace.h>
 #include <string.h>
 
@@ -35,7 +31,7 @@ void tstbase(int argc, char **argv){
   dev.Fini(ZOP_NULL);
   dev.Run(ZOP_NULL);
   dev.Stop(ZOP_NULL);
-
+/*
   uns::CMS *cms = uns::CMS::Instance();
   cms->Serialize(ZOP_NULL);
   cms->Clone(ZOP_NULL);
@@ -52,5 +48,10 @@ void tstbase(int argc, char **argv){
   z::Object *pobj = dynamic_cast<z::Object*>(cms);
   zdbg("CMS<cms:%p dev:%p res:%p obj:%p",cms, pdev, pres, pobj);
   uns::CMS::Uninstance();
+  */
+}
+
+void tstcrtp_obj(){
+    //z::crtp::Object<z::Object> obj;
 }
 #endif

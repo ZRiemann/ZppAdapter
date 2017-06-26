@@ -12,7 +12,10 @@
 #include <string>
 #include <map>
 #include <zit/thread/mutex.h>
+#include <zit/base/trace.h>
 
+#define ZTRACE_ZMQ 1
+#define ZINLINE_DUMP 1
 namespace z{
   namespace zmq{
     /**@class z::zmq::Msg
@@ -33,7 +36,11 @@ namespace z{
       
       void *Data(){return zmq_msg_data(&msg);}
       size_t Size(){return zmq_msg_size(&msg);}
+#if ZINLINE_DUMP
+      void Dump(int isSend){zmsg("[zmq] %s msg<size:%d, ptr:%p>", isSend ? "Send" : "Recv", Size(), Data());}
+#else
       void Dump(int isSend);
+#endif
       // get/set property...
       //protected:
     public:
@@ -55,9 +62,27 @@ namespace z{
       
       int Bind(const char *endpoint);
       int Connect(const char *endpoint);
-      
-      int MsgSend(Msg *msg, int flags); // zmq_msg_send
-      int MsgRecv(Msg *msg, int flags); // zmq_msg_recv
+
+      // inline for effactive
+      int MsgSend(Msg *msg, int flags = 0){
+#if ZTRACE_ZMQ
+          msg->Dump(1);
+#endif
+          return zmq_msg_send(&msg->msg, sockHandle, flags);
+      }
+      int MsgRecv(Msg *msg, int flags = 0){
+#if ZTRACE_ZMQ
+          int ret = zmq_msg_recv(&msg->msg, sockHandle, flags);
+          if(-1!=ret){
+              msg->Dump(0);
+          }else{
+              zdbg("%s", zmq_strerror(errno));
+          }
+          return ret;
+#else
+          return zmq_msg_recv(&msg->msg, sockHandle, flags);
+#endif
+      }
 
       int GetOpt(int option_name, void *option_value, size_t *option_len);
       int SetOpt(int option_name, const void *option_value, size_t option_len);

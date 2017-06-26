@@ -20,7 +20,7 @@ BIN_DIR=$(OUT_NAME)/$(BIN_NAME)
 INST_DIR=/usr/local/lib
 ZPP_NAME=libzpp
 ZPP_VER=$(ZPP_NAME).a
-CFLAGS=$(GDB) -Wall -Werror
+CFLAGS=$(GDB) -Wall -Werror -I.
 # **** export variable to sub makefiles ***
 export CC CFLAGS BIN_DIR BIN_NAME GDB ZPP_VER VER
 
