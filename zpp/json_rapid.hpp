@@ -103,7 +103,7 @@ namespace z{
 inline z::json::RJson::RJson(){
     doc = new(std::nothrow) rapidjson::Document;
     if(!doc){
-        ZERRC(ZMEM_INSUFFICIENT);
+        // ZERRC(ZMEM_INSUFFICIENT);
         val = NULL;
         needDel = false;
         alloc = NULL;
@@ -112,7 +112,7 @@ inline z::json::RJson::RJson(){
         val = doc;
         needDel = true;
     }
-    zdbg_rpd("RJson() val<%p>", val);
+    //zdbg_rpd("RJson() val<%p>", val);
 }
 
 inline z::json::RJson::RJson(rapidjson::Document::AllocatorType *alc){
@@ -120,7 +120,7 @@ inline z::json::RJson::RJson(rapidjson::Document::AllocatorType *alc){
         // new Member
         val = new(std::nothrow) rapidjson::Value;
         if(!val){
-            ZERRC(ZMEM_INSUFFICIENT);
+            //ZERRC(ZMEM_INSUFFICIENT);
             needDel = false;
             alloc = NULL;
         }else{
@@ -134,14 +134,14 @@ inline z::json::RJson::RJson(rapidjson::Document::AllocatorType *alc){
         needDel = false;
     }
     doc = NULL;
-    zdbg_rpd("RJson(alc<%p>) val<%p>", alc, val);
+    //zdbg_rpd("RJson(alc<%p>) val<%p>", alc, val);
 }
 
 inline z::json::RJson::~RJson(){
     if(needDel){
         doc ? delete(doc) : delete(val);
     }
-    zdbg_rpd("~RJson() val<%p>", val);
+    //zdbg_rpd("~RJson() val<%p>", val);
 }
 
 
@@ -155,9 +155,9 @@ inline int z::json::RJson::LoadFile(const char *file){
     do{
         if(!file || !doc){
             break;
-        }else{
-            zmsg_rpd("LoadFile(%s)", file);
-        }
+        }//else{
+        //    zmsg_rpd("LoadFile(%s)", file);
+        //}
 #if ZSYS_WINDOWS
         fp = fopen(file, "rb");
 #else
@@ -182,7 +182,7 @@ inline int z::json::RJson::LoadFile(const char *file){
         fclose(fp);
     }
   
-    ZERRCX(ret);
+    //ZERRCX(ret);
     return ret;
 }
 
@@ -192,9 +192,9 @@ inline int z::json::RJson::SaveFile(const char *file){
     do{
         if(!file || !doc){
             break;
-        }else{
-            zmsg_rpd("SaveFile(%s)", file);
-        }
+        }//else{
+        //    zmsg_rpd("SaveFile(%s)", file);
+        //}
 #ifdef ZSYS_WINDOWS
         fp = fopen(file, "wb");
 #else
@@ -216,7 +216,7 @@ inline int z::json::RJson::SaveFile(const char *file){
     if(fp){
         fclose(fp);
     }
-    ZERRCX(ret);
+    //ZERRCX(ret);
     return ret;
 }
 
@@ -238,7 +238,7 @@ inline int z::json::RJson::LoadString(const char *json){
         ret = ZOK;
     }while(0);
 
-    ZERRC(ret);
+    //ZERRC(ret);
     return ret;
 }
 
@@ -309,7 +309,7 @@ inline int z::json::RJson::GetInt(const char *key, int32_t &value){
     value = itr->value.GetInt();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
@@ -350,7 +350,7 @@ inline int z::json::RJson::GetUint(const char *key, uint32_t &value){
     value = itr->value.GetUint();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
@@ -391,7 +391,7 @@ inline int z::json::RJson::GetInt64(const char *key, int64_t &value){
     value = itr->value.GetInt64();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
@@ -432,7 +432,7 @@ inline int z::json::RJson::GetUint64(const char *key, uint64_t &value){
     value = itr->value.GetUint64();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
@@ -479,7 +479,7 @@ inline int z::json::RJson::GetString(const char *key, std::string &str){
     str = itr->value.GetString();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
@@ -520,7 +520,7 @@ inline int z::json::RJson::GetDouble(const char *key, double &value){
     value = itr->value.GetDouble();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
@@ -562,13 +562,13 @@ inline int z::json::RJson::GetBool(const char *key, bool &value){
     value = itr->value.GetBool();
     return ZOK;
   }
-  ZERRC(ZNOT_EXIST);
+  //ZERRC(ZNOT_EXIST);
   return ZNOT_EXIST;
 }
 
 inline int z::json::RJson::GetMember(const char *key, RJson *rj){
   if(!key){
-    ZERRC(ZPARAM_INVALID);
+      //ZERRC(ZPARAM_INVALID);
     return ZPARAM_INVALID;
   }
   
@@ -577,7 +577,7 @@ inline int z::json::RJson::GetMember(const char *key, RJson *rj){
     rj->val = &(itr->value);
     return ZOK;
   }
-  zerr_rpd("%s %s", key, zstrerr(ZNOT_EXIST));
+  //zerr_rpd("%s %s", key, zstrerr(ZNOT_EXIST));
   return ZNOT_EXIST;
 }
 
@@ -617,6 +617,5 @@ inline void z::json::RJson::ForEach(HandleEach fun, void *hint){
     (*fun)(&js, hint);
   }
 }
-
 
 #endif
