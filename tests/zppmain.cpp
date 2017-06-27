@@ -11,31 +11,34 @@
 
 using namespace std;
 int ztrace_zpptst(int level, void *user, const char* msg){
-  ztrace_log(level, user, msg);
-  return ztrace_console(level, user, msg);
+    ztrace_log(level, user, msg);
+    return ztrace_console(level, user, msg);
 }
 int main(int argc, char **argv){
-  ztrace_logctl("zpptst.log",32*1024*1024);
-  ztrace_bkgctl(ztrace_zpptst);
-  //ztrace_reg(ztrace_bkg, 0); // thread safe
-  ztrace_reg(ztrace_console, 0);
+    ztrace_logctl("zpptst.log",32*1024*1024);
+    ztrace_bkgctl(ztrace_zpptst);
+    //ztrace_reg(ztrace_bkg, 0); // thread safe
+    ztrace_reg(ztrace_console, 0);
 
-  if(argc < 2 || 0 == strcmp(argv[1], "-h") || 0 == strcmp(argv[1], "--help")){
-    zdbg("\nuseage:\n"
-	 " RpdJson\n"
-	 " Zmq\n"
-	 " Framework\n");
-  }else if(0 == strcmp(argv[1], "RpdJson")){
-    tstrpdjson(argc, argv);
-  }else if(0 == strcmp(argv[1], "Zmq")){
-    tstzmq(argc, argv);
-  }else if(0 == strcmp(argv[1], "Framework")){
-    tstframework(argc, argv);
-  }else{
-    zdbg("not support arguments.");
-  }
-  ztrace_bkgend();
-  ztrace_logctl(NULL,0); // close the log file.
+    if(argc < 2 || 0 == strcmp(argv[1], "-h") || 0 == strcmp(argv[1], "--help")){
+        zdbg("\nuseage:\n"
+             " RpdJson\n"
+             " json_rapid\n"
+             " Zmq\n"
+             " Framework\n");
+    }else if(0 == strcmp(argv[1], "RpdJson")){
+        tstrpdjson(argc, argv);
+    }else if(0 == strcmp(argv[1], "json_rapid")){
+        tstjson_rapid(argc, argv);
+    }else if(0 == strcmp(argv[1], "Zmq")){
+        tstzmq(argc, argv);
+    }else if(0 == strcmp(argv[1], "Framework")){
+        tstframework(argc, argv);
+    }else{
+        zdbg("not support arguments.");
+    }
+    ztrace_bkgend();
+    ztrace_logctl(NULL,0); // close the log file.
 
-  return 0;
+    return 0;
 }

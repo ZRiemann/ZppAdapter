@@ -34,7 +34,7 @@ define make_obj
 endef
 
 define install_zpp
-	rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
+	@rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
 	rm -fr /usr/local/include/zpp && \
 	cp -r zpp /usr/local/include/ && \
 	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR) && ldconfig

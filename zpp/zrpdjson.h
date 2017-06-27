@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace z{  
+namespace z{
   class RJson{
   public:
     RJson(); // DOC
