@@ -104,7 +104,7 @@ namespace z{
     Resource();
     ~Resource();
     oid_t id;
-    ostat_t state; // 资源状态
+    ostat_t status; // 资源状态
     //Items items;
     Mitem items;
   };

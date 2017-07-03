@@ -134,7 +134,7 @@ int Object::ReleaseArchive(ZOP_ARG){
 //ZIMPLEMENT_OBJ(Resource, z::Resource);
 Resource::Resource()
   :id(0)
-  ,state(0){
+  ,status(0){
   type = 1;
 }
 

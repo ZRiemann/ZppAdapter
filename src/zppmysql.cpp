@@ -82,6 +82,7 @@ int MySql::Connect(const char *user, const char *passwd, const char *db, const c
   if(NULL == mysql_real_connect(mysql, host, user, passwd, db, port, NULL, 0)){
     const char *err = mysql_error(mysql);
     zerr_mysql("%s", err);
+    return ZFAIL;
   }
   return ZOK;
 }
@@ -91,7 +92,7 @@ int MySql::Query(const char *query){
   ZDBG("%s", query);
   if(-1 == (ret = mysql_query(mysql, query))){
     const char *err = mysql_error(mysql);
-    ZERR("%s", err);    
+    ZERR("%s", err);
   }
   return ret;
 }

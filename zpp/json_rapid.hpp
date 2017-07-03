@@ -84,7 +84,7 @@ namespace z{
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/reader.h>
 
-#define ZTRACE_RJSON 1 // enable or disable RJson
+#define ZTRACE_RJSON 0 // enable or disable RJson
 
 #if ZTRACE_RJSON
 #define zdbg_rpd(fmt, ...) zdbgx(g_ztrace_flag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,"[RJson]", ##__VA_ARGS__)
@@ -614,7 +614,7 @@ inline void z::json::RJson::ForEach(HandleEach fun, void *hint){
   rapidjson::SizeType size = val->Size();
   for(rapidjson::SizeType idx = 0; idx<size; idx++){
     js.SetValue((*val)[idx]);
-    (*fun)(&js, hint);
+     (*fun)(&js, hint);
   }
 }
 
