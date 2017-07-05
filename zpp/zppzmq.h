@@ -33,6 +33,7 @@ namespace z{
     public:
       int Move(Msg *srcMsg){return zmq_msg_move(&msg, &(srcMsg->msg));}
       int Copy(Msg *srcMsg){return zmq_msg_copy(&msg, &(srcMsg->msg));}
+      int IsMore(){return zmq_msg_more(&msg);}
       
       void *Data(){return zmq_msg_data(&msg);}
       size_t Size(){return zmq_msg_size(&msg);}
@@ -46,11 +47,12 @@ namespace z{
     public:
       zmq_msg_t msg;
     };
-
+    
     /**@class z::zmq::Socket
      * @brief zmq_socket 封装
      */
     typedef std::vector<std::string> Endpoints;
+    //typedef std::vector<Msg *> Msgs;
     class Socket{
     public:
       static int Init(bool setLinger0 = true); // 初始化zmq,程序开始时调用
@@ -94,7 +96,7 @@ namespace z{
       
     public:
       // lazy pirate pattern for ZMQ_REQ socket, return ZOK or Z*
-      int LazyPirateReq(Msg *msgReq, Msg *msgRep, int timeout_ms = 5000, int trys = 1);
+      int LazyPirateReq(Msg *msgReq, Msg *msgRep, int flag = 0, int timeout_ms = 5000, int trys = 1);
       int Reconnect(); // close and reconnect;
       
     public: // SUB interface
