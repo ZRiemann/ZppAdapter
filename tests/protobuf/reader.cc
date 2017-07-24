@@ -23,7 +23,8 @@ void listmsg(Msg &msg){
     }
     printf("res: %p res1: %p\n", &res,  res1);
   }
-  
+  std::cout<<msg.DebugString()<<std::endl;
+#if 0
   for (const google::protobuf::Any& resource : msg.res()){
     if (resource.Is<AddrIp>()) {
       AddrIp addr;
@@ -48,14 +49,25 @@ void listmsg(Msg &msg){
 #endif    
     }
   }
+#endif
 }
 int main(int argc, char **argv){
   Msg msg1;
 
-  fstream input("./msg.pb", ios::in | ios::binary);
+  fstream input("./msg1.pb", ios::in | ios::binary);
   if(!msg1.ParseFromIstream(&input)){
     cerr<<"Failed to parse msg."<<endl;
   }else{
+      std::cout<<msg1.DebugString()<<std::endl;
+      listmsg(msg1);
+
+      fstream output("./msg2.pb", ios::out | ios::trunc | ios::binary);
+      if(!msg1.SerializeToOstream(&output)){
+          cerr<<"Failed to write msg."<<endl;
+      }
+  }
+#if 0
+  else{
     listmsg(msg1);
 #if 1 // test set_ip(i);
     uns::AddrIp ip;
@@ -133,6 +145,6 @@ int main(int argc, char **argv){
     }
 #endif
   }
-  
+#endif
   return 0;
 }

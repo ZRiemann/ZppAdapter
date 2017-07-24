@@ -4,12 +4,6 @@ import "google/protobuf/any.proto";
 
 package uns;
 
-message Msg{
-  uint32 src = 1;
-  uint32 dest = 2;
-  uint32 operate = 3;
-  repeated google.protobuf.Any res = 4;
-}
 
 message Resource{
   uint32 type = 1;
@@ -30,4 +24,15 @@ message AddrIp{
 message IOPort{
   uint32 type = 1;
   repeated uint32 idx = 2; // 0xaabb aa:端口号,bb:状态
+}
+
+message Msg{
+  uint32 src = 1;
+  uint32 dest = 2;
+  uint32 operate = 3;
+  repeated google.protobuf.Any res = 4;
+  int32 new32 = 5;
+  string newstr = 6;
+  AddrIp addr = 7;
+  google.protobuf.Any any = 8;
 }

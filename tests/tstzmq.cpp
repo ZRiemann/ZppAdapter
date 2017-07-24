@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <zpp/zrpdjson.h>
 #include <rapidjson/filewritestream.h>
 #include <rapidjson/writer.h>
 
@@ -318,6 +317,7 @@ void cli_sub(int argc, char **argv){
 }
 
 void rjson_base(int argc, char **argv){
+    /*
   Document *doc;
   Value v;//(kObjectType);
   FILE* fp;
@@ -356,17 +356,18 @@ void rjson_base(int argc, char **argv){
   doc->Accept(writer);
   fclose(fp);
   delete doc;
+    */
 }
 
 void rjson_filewr(int argc, char **argv){
   zdbg("RJson file read write");
 
-  RJson doc;
+  //RJson doc;
   
 
-  doc.LoadFile("output.json");
+  //doc.LoadFile("output.json");
   
-  doc.SaveFile("output1.json");
+  //doc.SaveFile("output1.json");
 
   
 }

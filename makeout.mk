@@ -1,4 +1,4 @@
-ZPP_LIB = zppzmq.o object.o zrpdjson.o zppmysql.o
+ZPP_LIB = zppzmq.o object.o zppmysql.o
 ZPP_OUT = tstzmq.o zppmain.o tstframework.o
 
 BIN_DIR:=../$(BIN_NAME)

@@ -3,6 +3,10 @@ ifeq ($(VER), debug)
 	GDB=-g
 else ifeq ($(VER), release)
 	GDB=-O3
+else ifeq ($(VER), pic)
+	GDB=-O3
+	FPIC=-fPIC
+	PIC=_pic
 else
 $(warning default release module)
 $(warning useage: make VER={debug|release})
@@ -19,8 +23,8 @@ OBJS_DIR=$(OUT_NAME)/$(BIN_NAME)_obj
 BIN_DIR=$(OUT_NAME)/$(BIN_NAME)
 INST_DIR=/usr/local/lib
 ZPP_NAME=libzpp
-ZPP_VER=$(ZPP_NAME).a
-CFLAGS=$(GDB) -Wall -Werror -I.
+ZPP_VER=$(ZPP_NAME)$(PIC).a
+CFLAGS=$(GDB) -Wall -Werror -I. $(FPIC)
 # **** export variable to sub makefiles ***
 export CC CFLAGS BIN_DIR BIN_NAME GDB ZPP_VER VER
 
@@ -56,7 +60,11 @@ clean:
 
 .PHONY:install
 install :
+ifeq ($(VER), pic)
+	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR)
+else
 	$(install_zpp)
+endif
 
 .PHONY:uninstall
 uninstall:

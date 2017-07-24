@@ -69,7 +69,7 @@ void svr_rep(int argc, char **argv){
     zmq_msg_init(&msg_send);
 
     zmq_msg_recv(&msg_recv, rep, 0);
-
+    printf("msg<size:%lu>\n", zmq_msg_size(&msg_recv));
     zmq_msg_copy(&msg_send, &msg_recv);
     zmq_msg_send(&msg_send, rep, 0);
 
