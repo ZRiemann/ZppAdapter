@@ -14,6 +14,7 @@ int main(int argc, char **argv){
   IOPort io1;
   NewItem itm;
   AddrIp addr2;
+  NewMsg* newMsg;
   google::protobuf::Any *any;
   msg.set_src(0x01010001);
   msg.set_dest(0x01010002);
@@ -52,10 +53,20 @@ int main(int argc, char **argv){
   addr2.set_host("liux-pc1");
   addr2.set_rep_port(5858);
   any->PackFrom(addr2);
+  
+  newMsg = msg.mutable_new_msg();
+  newMsg->set_src(1);
+  newMsg->set_dest(2);
+  
   std::cout<<msg.DebugString()<<std::endl;
   fstream output("./msg1.pb", ios::out | ios::trunc | ios::binary);
   if(!msg.SerializeToOstream(&output)){
     cerr<<"Failed to write msg."<<endl;
   }
+  size_t len = msg.ByteSizeLong();
+  char *buf = (char*)malloc(len);
+  msg.SerializeToArray(buf, len);
+  cout<<"array len:"<<len<<endl;
+  
   return 0;
 }

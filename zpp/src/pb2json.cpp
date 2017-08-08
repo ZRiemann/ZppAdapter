@@ -134,6 +134,11 @@ namespace z{
                 key = msgs.back().key; // array name
                 msg = msgs[msgs.size()-2].msg; // array parent message
             }
+            if(!msg && key && '@' != *key){
+                // can not cover to Message
+                ZERRC(ret);
+                return ret;
+            }
             switch(status){
             case RJson::valString:
                 if(key && '@' == *key){
@@ -340,7 +345,23 @@ namespace z{
             ZERRCX(ret);
             return ret;
         }
-
+        int Json2pb(RJson *json, google::protobuf::Message &pb){
+            int ret = ZOK;
+            if(!json){
+                return ZPARAM_INVALID;
+            }
+            Msgs msgs;
+            ret = json->ForEach(Json2field, &msgs);
+            if(ZOK == ret){
+                if(1 == msgs.size()){
+                    pb.GetReflection()->Swap(&pb, msgs.back().msg);
+                }else{
+                    ret = ZPARAM_INVALID;
+                }
+            }
+            ZERRCX(ret);
+            return ret;
+        }
         int Pb2json(RJson *json, const Message *pb){
             int ret = ZOK;
             const Descriptor *d = pb->GetDescriptor();

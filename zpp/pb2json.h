@@ -26,6 +26,7 @@
 namespace z{
     namespace json{
         int Json2pb(RJson *json, google::protobuf::Message **pb);
+        int Json2pb(RJson *json, google::protobuf::Message &pb);
         int Pb2json(RJson *json, const google::protobuf::Message *pb);
     }
 }

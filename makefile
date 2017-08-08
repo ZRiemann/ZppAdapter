@@ -16,7 +16,7 @@ endif
 
 CC=g++
 BIN_NAME=$(VER)
-ROOT_DIR=$(shell pwd)
+ROOT_DIR=.
 OUT_NAME=make
 OUT_DIR=$(ROOT_DIR)/$(OUT_NAME)
 OBJS_DIR=$(OUT_NAME)/$(BIN_NAME)_obj
@@ -57,6 +57,9 @@ makeout:
 clean:
 	@rm -fr $(OUT_DIR) &&\
 	rm -f makeworker tests/protobuf/*.pb* tests/protobuf/reader tests/protobuf/write
+	@make -C $(ROOT_DIR)/tests/protobuf clean
+	@make -C $(ROOT_DIR)/tests/pic2fun clean
+
 
 .PHONY:install
 install :

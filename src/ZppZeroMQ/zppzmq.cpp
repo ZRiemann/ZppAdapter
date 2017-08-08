@@ -16,37 +16,37 @@ namespace z{
 #define zwar_zmq(fmt, ...) zwarx(Socket::traceFlag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,traceTitle, ##__VA_ARGS__)
 #define zerr_zmq(fmt, ...) zerrx(Socket::traceFlag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,traceTitle, ##__VA_ARGS__)
 #define zinf_zmq(fmt, ...) zinfx(Socket::traceFlag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,traceTitle, ##__VA_ARGS__)
-    
+
 #define ZMQERR() ZERR("%s", zmq_strerror(errno))
 
-    
         int Socket::traceFlag = 0xfe;
         void *Socket::s_ctx = NULL;
+
         int Socket::Init(bool setLinger0){
-        int major, minor,  patch;
-        zmq_version(&major, &minor, &patch);
-        if(major < 4 || (major ==4 && minor < 2)){
-            ZERR("ZeroMQ version mast v4.2.1 or later.");
-            return ZNOT_SUPPORT;
-        }
-        if(s_ctx){
-            return ZOK; // init already
-        }
-        s_ctx = zmq_ctx_new();
-        if(setLinger0){
-            zmsg_zmq("Set zmq context linger timeout 0");
-            zmq_ctx_set(s_ctx, ZMQ_BLOCKY, false);
-        }
-        if(NULL == s_ctx){
-            ZMQERR();
-            return ZFAIL;
-        }
+            int major, minor,  patch;
+            zmq_version(&major, &minor, &patch);
+            if(major < 4 || (major ==4 && minor < 2)){
+                ZERR("ZeroMQ version mast v4.2.1 or later.");
+                return ZNOT_SUPPORT;
+            }
+            if(s_ctx){
+                return ZOK; // init already
+            }
+            s_ctx = zmq_ctx_new();
+            if(setLinger0){
+                zmsg_zmq("Set zmq context linger timeout 0");
+                zmq_ctx_set(s_ctx, ZMQ_BLOCKY, false);
+            }
+            if(NULL == s_ctx){
+                ZMQERR();
+                return ZFAIL;
+            }
 #if ZTRACE_ZMQ
-        zdbg_zmq("ctx<%p> = Init(setLinger0:%d) version%d.%d.%d", s_ctx, setLinger0, major, minor, patch);
+            zdbg_zmq("ctx<%p> = Init(setLinger0:%d) version%d.%d.%d", s_ctx, setLinger0, major, minor, patch);
 #endif
-        return ZOK;
+            return ZOK;
         }
-    
+
         int Socket::Fini(){
             if(!s_ctx){
                 return ZOK;
@@ -66,7 +66,7 @@ namespace z{
             s_ctx = NULL;
             return ZOK;
         }
-    
+
         Socket::Socket(int _sockType){
             sockType = _sockType;
             sockHandle = zmq_socket(s_ctx, sockType);
@@ -74,13 +74,13 @@ namespace z{
                 ZMQERR();
                 return;
             }
-      
+
             if(sockType != ZMQ_REQ && sockType != ZMQ_REP && sockHandle){
                 SetHwm(0, 100);
                 SetHwm(1, 100);
             }
             SetLinger(0);
-      
+
 #if ZTRACE_ZMQ
             zdbg_zmq("zmqsock<type:%d handle:%p ptr:%p>", sockType, sockHandle, this);
 #else
@@ -89,7 +89,7 @@ namespace z{
             }
 #endif
         }
-    
+
         Socket::Socket(int _sockType, const char *id){
             sockType = _sockType;
             sockHandle = zmq_socket(s_ctx, sockType);
@@ -97,7 +97,7 @@ namespace z{
                 ZMQERR();
                 return;
             }
-      
+
             if(sockType != ZMQ_REQ && sockType != ZMQ_REP && sockHandle){
                 SetHwm(0, 100);
                 SetHwm(1, 100);
@@ -118,7 +118,7 @@ namespace z{
             zdbg_zmq("close<handle:%p ptr:%p>", sockHandle, this);
 #endif
         }
-    
+
         int Socket::Bind(const char *endpoint){
             int ret = zmq_bind(sockHandle, endpoint);
             if(-1 == ret){
@@ -127,7 +127,7 @@ namespace z{
             ZMSG("zmq_bind(%p, %s)=%d", sockHandle, endpoint, ret);
             return ret;
         }
-    
+
         int Socket::Connect(const char *endpoint){
             int ret = zmq_connect(sockHandle, endpoint);
             if(-1 == ret){
@@ -138,7 +138,7 @@ namespace z{
             ZMSG("zmq_connect(%p, %s)=%d", sockHandle, endpoint,ret);
             return ret;
         }
-      
+
 #if 0
         int Socket::MsgSend(Msg *msg, int flags){
             int ret;
@@ -150,7 +150,7 @@ namespace z{
             }
             return ret;
         }
-    
+
         int Socket::MsgRecv(Msg *msg, int flags){
             int ret;
             if(-1 == (ret = zmq_msg_recv(&msg->msg, sockHandle, flags))){
@@ -164,12 +164,23 @@ namespace z{
             return ret;
         }
 #endif // if 0/1
-      
+
         int Socket::LazyPirateReq(Msg *_msgReq, Msg *_msgRep, int flag, int timeout_ms, int trys){
             int ret = ZTIMEOUT;
             int rc;
 
             do{
+                zmq_pollitem_t items[]={{sockHandle, 0, ZMQ_POLLIN, 0}};
+                // read old date first
+                rc = zmq_poll(items, 1, 0);
+                if(rc > 0){
+                    // old date
+                    Msg msg;
+                    if( -1 == MsgRecv(&msg, 0) ){
+                        ret = ZFAIL;
+                        break;
+                    }
+                }
                 if(-1 == MsgSend(_msgReq, flag)){
                     ret = ZFAIL;
                     break;
@@ -179,7 +190,7 @@ namespace z{
                     break;
                 }
 
-                zmq_pollitem_t items[]={{sockHandle, 0, ZMQ_POLLIN, 0}};
+                //zmq_pollitem_t items[]={{sockHandle, 0, ZMQ_POLLIN, 0}};
                 rc = zmq_poll(items, 1, timeout_ms);
                 if(rc > 0){
                     // reply
@@ -209,7 +220,7 @@ namespace z{
         int Socket::Reconnect(){
             int ret = ZOK;
             int size = endpoints.size();
-  
+
             if(size){
                 Endpoints endp = endpoints;
                 ZMSG("Reconnect<%p>", sockHandle);
@@ -222,7 +233,7 @@ namespace z{
                 }else{
                     SetLinger(0);
                 }
-    
+
                 endpoints.clear(); // avoid mulit push
                 do{
                     Connect(endp[size-1].c_str());
@@ -305,29 +316,30 @@ namespace z{
             }
             return ret;
         }
+/* inline
+   Msg::Msg(){
+   zmq_msg_init(&msg); //always return 0
+   }
 
-        Msg::Msg(){
-            zmq_msg_init(&msg); //always return 0
-        }
+   Msg::Msg(Msg *copy){
+   zmq_msg_init(&msg);
+   Copy(copy);
+   }
 
-        Msg::Msg(Msg *copy){
-            zmq_msg_init(&msg);
-            Copy(copy);
-        }
+   Msg::Msg(int *initOk, size_t size){
+   *initOk = zmq_msg_init_size(&msg, size);
+   if(-1 == *initOk){
+   ZMQERR();
+   }
+   }
 
-        Msg::Msg(int *initOk, size_t size){
-            *initOk = zmq_msg_init_size(&msg, size);
-            if(-1 == *initOk){
-                ZMQERR();
-            }
-        }
-
-        Msg::Msg(int *initOk, void* data, size_t size, zmq_free_fn *ffn, void*hint){
-            *initOk = zmq_msg_init_data(&msg, data, size, ffn, hint);
-            if(-1 == *initOk){
-                ZMQERR();
-            }
-        }
+   Msg::Msg(int *initOk, void* data, size_t size, zmq_free_fn *ffn, void*hint){
+   *initOk = zmq_msg_init_data(&msg, data, size, ffn, hint);
+   if(-1 == *initOk){
+   ZMQERR();
+   }
+   }
+*/
         Msg::~Msg(){
 #if ZTRACE_ZMQ
             //zdbg_zmq("%d = zmq_msg_close(%p)", zmq_msg_close(&msg), &msg);
@@ -361,21 +373,21 @@ namespace z{
 #endif // if 0/1
 
         Connecter::Connecter(){
-            zmutex_init(&mtx);
+            zspin_init(&spin);
         }
 
         Connecter::~Connecter(){
-            zmutex_uninit(&mtx);
+            zspin_fini(&spin);
         }
-    
+
         z::zmq::Socket * Connecter::Connect(const std::string &endpoint, int sockType){
             ep2sock *ep2sk = NULL;
             z::zmq::Socket *sock = NULL;
             uint32_t tid = zthread_self();
 
-            ZLOCK(&mtx);
+            zspin_lock(&spin);
             if(z::MapFind(tid2ep, tid, ep2sk)){
-                ZUNLOCK(&mtx);
+                zspin_unlock(&spin);
                 // find sock
                 if(!z::MapFind(*ep2sk, endpoint, sock)){
                     // add new sock
@@ -394,17 +406,17 @@ namespace z{
                             delete sock;
                             sock = NULL;
                         }
-                    }	  
+                    }
                 }// else find sock
             }else{
                 // first time connect
                 ep2sk = new(std::nothrow) ep2sock;
                 if(!ep2sk){
-                    ZUNLOCK(&mtx);
+                    zspin_unlock(&spin);
                     ZERRC(ZMEM_INSUFFICIENT);
                 }else{
                     tid2ep[tid] = ep2sk;
-                    ZUNLOCK(&mtx);
+                    zspin_unlock(&spin);
                     // add new sock
                     sock = new(std::nothrow)Socket(sockType);
                     if(!sock){
@@ -426,24 +438,19 @@ namespace z{
             }
             return sock;
         }
-    
+
         void Connecter::Close(){
             ep2sock *ep2sk = NULL;
             uint32_t tid = zthread_self();
-            ZLOCK(&mtx);
+            zspin_lock(&spin);
             if(z::MapFind(tid2ep, tid, ep2sk)){
                 tid2ep.erase(tid); // erase tid
-                ZUNLOCK(&mtx);
+                zspin_unlock(&spin);
                 z::MapClear(*ep2sk); // clear socks
                 delete ep2sk;
             }else{
-                ZUNLOCK(&mtx);
+                zspin_unlock(&spin);
             }
         }
-    
-        //zmutex_t mtx;
-        //typedef std::map<std::string, z::zmq::Socket*> ep2sock; 
-        //std::map< uint32_t, ep2sock* > tid2ep;
-    
     }// namespace zmq
 }// namespace z

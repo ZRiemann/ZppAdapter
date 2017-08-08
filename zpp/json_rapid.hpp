@@ -8,6 +8,7 @@
 
 // RJson interface definitons
 #include <rapidjson/document.h>
+#include <rapidjson/memorystream.h>
 namespace z{
     namespace json{
         class RJson{
@@ -20,9 +21,8 @@ namespace z{
             int LoadFile(const char *file);
             int SaveFile(const char *file);
 
-            int LoadString(const char *json);
+            int LoadString(const char *json, size_t len = 0); // 0-'\0'eof; !0-eof !0
             int SaveString(std::string &str);
-
             void Swap(RJson *js);
             // 设置与获取
             rapidjson::Document::AllocatorType *GetAllocator();
@@ -249,15 +249,19 @@ inline int z::json::RJson::SaveFile(const char *file){
     return ret;
 }
 
-inline int z::json::RJson::LoadString(const char *json){
+inline int z::json::RJson::LoadString(const char *json, size_t len){
     int ret = ZFAIL;
     do{
         if(!json || !doc){
             ret = ZPARAM_INVALID;
             break;
         }
-
-        doc->Parse(json);
+        if(len){
+            rapidjson::MemoryStream mem(json, len);
+            doc->ParseStream(mem);
+        }else{
+            doc->Parse(json);
+        }
         if(!doc->IsObject()){
             ret = ZPARAM_INVALID;
             break;
@@ -278,7 +282,8 @@ inline int z::json::RJson::SaveString(std::string &str){
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     doc->Accept(writer);
-    str = buffer.GetString();
+    //str = buffer.GetString();
+    str.assign(buffer.GetString(), buffer.GetSize());
     return ZOK;
 }
 

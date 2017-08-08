@@ -59,14 +59,14 @@ int Object::CreateObj(ZOP_ARG){
 std::map<otype_t, zoperate>* Object::pdyn_map;
 
 #if ZUSE_OBJ_CNT
-uint32_t Object::obj_cnt;
+zatm32_t Object::obj_cnt;
 #endif
 
 Object::Object()
   :type(0){
 #if ZTRACE_OBJECT
 #if ZUSE_OBJ_CNT
-  ZDBG("obj<%p> total:%d>", this, zatm_add(&obj_cnt, 1));
+  ZDBG("obj<%p> total:%d>", this, zatm_inc(&obj_cnt));
 #else
   ZDBG("obj<%p>", this);
 #endif
@@ -76,7 +76,7 @@ Object::Object()
 Object::~Object(){
 #if ZTRACE_OBJECT
 #if ZUSE_OBJ_CNT
-  ZDBG("obj<%p> total:%d>", this, zatm_sub(&obj_cnt, 1));
+  ZDBG("obj<%p> total:%d>", this, zatm_dec(&obj_cnt));
 #else
   ZDBG("obj<%p>", this);
 #endif

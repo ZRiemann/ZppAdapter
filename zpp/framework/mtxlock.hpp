@@ -3,22 +3,21 @@
 /**@file zpp/framework/mtxlock.hpp
  * @brief mutex lock
  */
-#include <zit/thread/thread_def.h>
+#include <zit/thread/mutex.h>
 
 namespace z{
-  class MtxLock{
-    zmutex_t *mtx;
-  public:
-    MtxLock(zmutex_t *m){
-      mtx = m;
-      ZLOCK(mtx);
-    }
-    
-    ~MtxLock(){
-      ZUNLOCK(mtx);
-    }
-  };
-  
+    class MtxLock{
+        zmtx_t *mtx;
+    public:
+        MtxLock(zmtx_t *m){
+            mtx = m;
+            zmtx_lock(mtx);
+        }
+
+        ~MtxLock(){
+            zmtx_unlock(mtx);
+        }
+    };
 }
 
 #endif

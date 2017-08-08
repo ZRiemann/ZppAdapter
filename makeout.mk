@@ -10,4 +10,4 @@ $(BIN_DIR)/$(ZPP_VER) : $(ZPP_LIB)
 	ar crs $@ $^
 
 $(BIN_DIR)/zpp_test : $(ZPP_OUT) $(BIN_DIR)/$(ZPP_VER)
-	$(CC) $(CFLAGS)  -o $@ $(ZPP_OUT) -L$(BIN_DIR) -lzpp -lmysqlclient -lzit -lzmq -lrt
+	$(CC) $(CFLAGS)  -o $@ $(ZPP_OUT) -L$(BIN_DIR) -lzpp -lmysqlclient -lzit -lzmq -pthread -lrt

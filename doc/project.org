@@ -1,4 +1,20 @@
-# 170428
+* 任务表
+** TODO ZeroMQ [0%]
+   - [ ] 在线化，去库
+* 日志
+** 2017-07
+*** <2017-07-25 Tue>
+ - 修改.log 为 .org;
+ - 测试protobuf动态扩展插件(tests/pic2fun)
+   + 老message不能和新message Swap()
+   + 老代码可以Dump新msg指针，但不能转json
+   + 插件指针由插件操作，老代码操作老数据；
+   + 插件解析老代码对象中的新数据(OK)
+     1. 新数据文件
+     2. 老代码加载
+     3. 插件读取老代码中对象中新数据：OK
+
+*** <2017-04-28 Fri>
 1. 基准req-rep服务测试
    *p 进程数 t 每进程的线程数
    client      server     request    time      partten
@@ -8,7 +24,8 @@
    1           2p-1t	  500000     ?	       req-rep
    1           1p-2t      500000     ?	       req-rep
    1	       2p-1	  10000	     5sec      req_percon
-#170502
+
+*** <2017-05-02 Tue>
 1. LRU 模块实现
 2. 消息组模块
 3. CMS/EMS/ACS/DAG/DPS 消息流接口定义

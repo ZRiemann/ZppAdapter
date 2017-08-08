@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package uns;
+
+message NewItem{
+    int32 type = 1;
+    string name = 2;
+}
