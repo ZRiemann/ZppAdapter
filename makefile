@@ -34,21 +34,24 @@ define make_obj
 	@mkdir -p $(BIN_DIR)
 	@cp -u makeout.mk $(OBJS_DIR)/makefile
 	@make -C $(ROOT_DIR)/tests/protobuf
-	@./compiler.sh . $(OBJS_DIR) $(CC) "$(CFLAGS)"
+	@./compiler.sh tests $(OBJS_DIR) $(CC) "$(CFLAGS)"
 endef
 
-define install_zpp
-	@rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
-	rm -fr /usr/local/include/zpp && \
-	cp -r zpp /usr/local/include/ && \
-	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR) && ldconfig
-endef
+#define install_zpp
+#	@rm -f $(INST_DIR)/$(ZPP_NAME)* &&\
+#	rm -fr /usr/local/include/zpp && \
+#	cp -r zpp /usr/local/include/ && \
+#	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR) && ldconfig
+#endef
 
 .PHONY : all
 all: makezit makeout
-.PHONY:makezit
+
+.PHONY : makezit
 makezit:
 	$(make_obj)
+
+.PHONY : makeout
 makeout:
 	@make -C $(OBJS_DIR)
 	@make -C tests
@@ -63,13 +66,14 @@ clean:
 
 .PHONY:install
 install :
-ifeq ($(VER), pic)
-	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR)
-else
-	$(install_zpp)
-endif
+	@cp -r zpp /usr/local/include/
+#ifeq ($(VER), pic)
+#	cp $(BIN_DIR)/$(ZPP_VER) $(INST_DIR)
+#else
+#	$(install_zpp)
+#endif
 
 .PHONY:uninstall
 uninstall:
-	@rm -f $(INST_DIR)/$(ZPP_VER) &&\
-	rm -fr /usr/local/include/zpp
+	@rm -fr /usr/local/include/zpp
+#	@rm -f $(INST_DIR)/$(ZPP_VER)

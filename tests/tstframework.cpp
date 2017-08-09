@@ -1,7 +1,7 @@
 #include "tstframework.h"
 #if 1
-#include <zpp/framework/object.h>
-#include <zpp/framework/crtp_obj.hpp>
+#include <zpp/base/object.h>
+#include <zpp/base/crtp_obj.hpp>
 #include <zit/base/trace.h>
 #include <string.h>
 

@@ -1,6 +1,7 @@
-#ifndef _ZPP_NO_LIB_HPP_
-#define _ZPP_NO_LIB_HPP_
-/**@file zpp/no_lib.hpp
+#ifndef _ZPP_H_
+#define _ZPP_H_
+/**
+ * @file zpp/no_lib.hpp
  * @brief make zpp not need to load lib, and can be custom-made to suit requirements.
  * @note
  *   first include needed files in main file, JUST INCLUDE ONCE;
@@ -16,4 +17,16 @@
 #include "src/pb2json.cpp"
 #endif
 
-#endif // _ZPP_NO_LIB_HPP_
+#ifdef _ZPP_OBJECT_H_
+#include "src/object.cpp"
+#endif
+
+#ifdef _ZPP_ZMQ_H_
+#include "src/zmq.cpp"
+#endif
+
+#ifdef _ZPP_MYSQL_H_
+#include "src/mysql.cpp"
+#endif
+
+#endif // _ZPP_H_

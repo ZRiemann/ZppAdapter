@@ -1,5 +1,5 @@
-#ifndef _ZPPZMQ_H_
-#define _ZPPZMQ_H_
+#ifndef _ZPP_ZMQ_H_
+#define _ZPP_ZMQ_H_
 /**@file zpp/zppzmq.h
  * @brief ZeroMQ C++ 封装类, 提供编程效率
  * @note

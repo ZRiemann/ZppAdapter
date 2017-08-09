@@ -9,7 +9,6 @@ resource_pic.o : resource.cpp msg.pb.cc
 
 main : main.cpp resource.o msg.pb.cc
 	g++ -g -o $@ $^ /usr/local/lib/libprotobuf.a -lzit -lpthread -ldl -lrt
-#	g++ -g -o $@ $^ -lprotobuf -lzit -lpthread -ldl -lrt
 
 libtst_res.so : resource_pic.o plg_res.cpp plg_res_imp.cpp msg.pb.cc msg1.pb.cc
 	g++ -g -fPIC -shared -o $@ $^ /usr/local/lib/libprotobuf.a

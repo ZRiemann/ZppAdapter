@@ -8,6 +8,10 @@
 #include <iostream>
 #include "tstrpdjson.hpp"
 #include <string.h>
+#include <zpp/zmq.h>
+#include <zpp/mysql.h>
+#include <zpp/base/object.h>
+#include <zpp/zpp.h>
 
 using namespace std;
 int ztrace_zpptst(int level, void *user, const char* msg){

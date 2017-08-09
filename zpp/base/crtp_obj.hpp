@@ -14,7 +14,7 @@
 #ifdef ZTRACE_CRTP_OBJ
 #include <zit/base/trace.h>
 #endif
-#include <zpp/framework/types.h>
+#include <zpp/base/types.h>
 #include <map>
 
 namespace z{
@@ -61,7 +61,7 @@ namespace z{
         public:
             template<typename T>
             static Object<T>* CreateObj(otype_t otype);
-            
+
             template<typename T>
             Object<T> *Creater(otype_t otype);
             static std::map<otype_t, zoperate> mapCreater;

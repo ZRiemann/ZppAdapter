@@ -2,9 +2,9 @@
 #include <zit/base/error.h>
 #include <zit/base/time.h>
 #include <zit/thread/thread.h>
-#include <zpp/framework/mapfind.hpp>
+#include <zpp/base/mapfind.hpp>
 #include <zmq.h>
-#include <zpp/zppzmq.h>
+#include <zpp/zmq.h>
 #include <stdlib.h>
 #include <string.h>
 

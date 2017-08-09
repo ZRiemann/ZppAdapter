@@ -1,7 +1,7 @@
-#include <zpp/framework/object.h>
-#include <zpp/framework/crtp_obj.hpp>
+#include <zpp/base/object.h>
+#include <zpp/base/crtp_obj.hpp>
 #include <zit/base/trace.h>
-#include <zpp/framework/mapfind.hpp>
+#include <zpp/base/mapfind.hpp>
 
 #define ZTRACE_OBJECT 1
 
@@ -198,4 +198,3 @@ int Device::Stop(ZOP_ARG){
 #endif
   return ZOK;
 }
-

@@ -1,6 +1,7 @@
 #ifndef _ZPP_OBJECT_H_
 #define _ZPP_OBJECT_H_
-/**@file zpp/framework/object.h
+/**
+ * @file zpp/base/object.h
  * @brief 顶层框架抽象类
  * @note
  * @history
@@ -12,7 +13,7 @@
 #include <vector>
 #include <map>
 #include <stdio.h>
-#include <zpp/framework/types.h>
+#include <zpp/base/types.h>
 
 #define ZUSE_OBJ_CNT 1 // 启用对象计数功能，可辅助排查内存泄漏
 

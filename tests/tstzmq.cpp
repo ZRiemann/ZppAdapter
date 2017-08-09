@@ -1,6 +1,6 @@
 #include "tstzmq.h"
-#include <zpp/zppzmq.h>
-#include <zpp/zppmysql.h>
+#include <zpp/zmq.h>
+#include <zpp/mysql.h>
 #include <zit/base/trace.h>
 #include <zit/base/time.h>
 #include <zit/thread/thread.h>
