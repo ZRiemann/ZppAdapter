@@ -1,6 +1,6 @@
 #include "plg_res_imp.h"
 #include "resource.h"
-#include "msg1.pb.h"
+#include "../protobuf/msg1.pb.h"
 #include <zit/base/trace.h>
 #include <fstream>
 #include "../../zpp/pb2json.h"

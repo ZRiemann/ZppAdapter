@@ -3,7 +3,7 @@
 /**@class Resource
  * @brief base Resource definition
  */
-#include "msg.pb.h"
+#include "../protobuf/msg.pb.h"
 
 class Resource{
 public:

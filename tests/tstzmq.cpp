@@ -74,11 +74,11 @@ void tstzmq(int argc, char **argv){
 
 zthr_ret_t proc_connecter(zvalue_t param){
   zpair_t *pair = (zpair_t*)param;
-  zpair_t *pair1 = (zpair_t*)pair->value;
+  zpair_t *pair1 = (zpair_t*)pair->value.p;
 
   int request_num = pair->key.i;
   Connecter *conn = (Connecter*)pair1->key.p;
-  char *endp = (char*)pair1->value;
+  char *endp = (char*)pair1->value.p;
   int i = 0;
   Socket *sock;
   char buf[128];
@@ -113,9 +113,9 @@ void cli_connecter(int argc, char **argv){
   zthr_id_t *thrs = (zthr_id_t*)calloc(thr_num, sizeof(zthr_id_t));
 
   pair.key.i = atoi(argv[2]);
-  pair.value = (zvalue_t)&pair1;
+  pair.value.p = (zvalue_t)&pair1;
   pair1.key.p = (zptr_t)conn;
-  pair1.value = (zvalue_t)argv[3];
+  pair1.value.p = (zvalue_t)argv[3];
   
   for(i=0; i<thr_num; ++i){
     zthread_create(&thrs[i],  proc_connecter, (zvalue_t)&pair);

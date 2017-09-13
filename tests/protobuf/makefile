@@ -23,4 +23,4 @@ reader1 : msg.pb.cc reader1.cc msg1.pb.cc
 	g++ $^ -o $@ -lprotobuf
 
 pb2json : tst_pb2json.cc msg1.pb.cc msg.pb.cc
-	g++ -g $^ -o $@ -lprotobuf -lzit
+	g++ -g $^ -o $@ -lprotobuf -lzit -ldl
