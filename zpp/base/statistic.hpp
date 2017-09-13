@@ -15,34 +15,38 @@ namespace z{
     class Statistic{
 #if ZUSE_STATISTIC
     public:
-        static zstat_hots_t **hots;
-        zstat_node_t node;
+        static zststc_t ststc;
+        zststc_node_t node;
 #endif
     public:
         static zerr_t Init(int num, int *size){
 #if ZUSE_STATISTIC
-            return zstatistic_init(&hots, num, size);
+            return zststc_init(&ststc, num, size);
 #endif
         }
-        static zerr_t Fini(int num, int *size){
+        static zerr_t Fini(){
 #if ZUSE_STATISTIC
-            return zstatistic_fini(&hots, num, size);
+            return zststc_fini(&ststc);
 #endif
         }
-        static void DumpFile(int num, int *size, const char *path){
+        static void DumpOrg(const char *path){
 #if ZUSE_STATISTIC
-            zstatistic_dump_file(hots, num, size, path);
+            zststc_dump_org(&ststc, path);
 #endif
         }
-
+        static void AddThreadStack(const char *thr_name){
+#if ZUSE_STATISTIC
+            zststc_add_thrs(&ststc, thr_name);
+#endif
+        }
         Statistic(int sri, int sfi){
 #if ZUSE_STATISTIC
-            zstatistic_push_hots(hots, &node, sri, sfi);
+            zststc_push(&node, &ststc, sri, sfi);
 #endif
         }
         ~Statistic(){
 #if ZUSE_STATISTIC
-            zstatistic_pop_hots(&node);
+            zststc_pop(&node);
 #endif
         }
     };
