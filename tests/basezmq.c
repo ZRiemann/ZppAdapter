@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include <zit/base/time.h>
-#include <zit/base/trace.h>
-#include <zit/utility/traceconsole.h>
+#include <zsi/base/time.h>
+#include <zsi/base/trace.h>
+#include <zsi/zpp/trace2console.h>
 
 void svr_rep(int argc, char **argv);
 void cli_req(int argc, char **argv);

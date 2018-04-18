@@ -5,16 +5,19 @@
  */
 #include <zit/base/type.h>
 
-namespace z{
-    typedef uint32_t otype_t;
-    typedef uint32_t oid_t;
-    typedef uint32_t ostat_t;
+#define ZNS_ZB namespace z{
+#define ZNS_ZE }
 
-    extern int DEV_STAT_MASK;// 0x00000003
-    extern int DEV_STAT_FINI;// 0 // 未初始化状态
-    extern int DEV_STAT_INIT;// 1 // 初始化状态
-    extern int DEV_STAT_RUN;//  2 // 运行状态
-    extern int DEV_STAT_EXCP;// 3 // 异常状态
+ZNS_ZB
+typedef uint32_t otype_t;
+typedef uint32_t oid_t;
+typedef uint32_t ostat_t;
+
+extern int DEV_STAT_MASK;// 0x00000003
+extern int DEV_STAT_FINI;// 0 // 未初始化状态
+extern int DEV_STAT_INIT;// 1 // 初始化状态
+extern int DEV_STAT_RUN;//  2 // 运行状态
+extern int DEV_STAT_EXCP;// 3 // 异常状态
 
 #define DEV_SET_FINI(state)  (state = (state & (~z::DEV_STAT_MASK)) | z::DEV_STAT_FINI)
 #define DEV_SET_INIT(state) (state = (state & (~z::DEV_STAT_MASK)) | z::DEV_STAT_INIT)
@@ -27,6 +30,7 @@ namespace z{
 #define DEV_IS_EXCP(state) ((state & z::DEV_STAT_MASK) == z::DEV_STAT_EXCP)
 
 #define SafeDel(ptr) do{delete (ptr); (ptr)=NULL;}while(0)
-}
+
+ZNS_ZE
 
 #endif
