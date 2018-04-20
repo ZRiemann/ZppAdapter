@@ -11,7 +11,7 @@
  * @history
  *   2017-07-18  ZRiemann found
  */
-#include <zit/base/trace.h>
+#include <zsi/base/trace.h>
 
 #ifdef _ZPP_PB2JSON_H_
 #include "src/pb2json.cpp"
@@ -27,6 +27,10 @@
 
 #ifdef _ZPP_MYSQL_H_
 #include "src/mysql.cpp"
+#endif
+
+#ifdef _ZEVENT2_CORE_H_
+#include "src/event2_core.cpp"
 #endif
 
 #endif // _ZPP_H_

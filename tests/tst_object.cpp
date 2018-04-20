@@ -28,7 +28,7 @@
  * @author Z.Riemann https://github.com/ZRiemann/
  * @date 2018-04-18 Z.Riemann found
  *
- * @zmake.app zpptst
+ * @zmake.app zpptst;
  */
 
 #include <stdio.h>
@@ -68,9 +68,9 @@ public:
     }
 };
 zerr_t tu_object(zop_arg){
-        printf("#-------------------------------------------------------------------------------\n"
-               "# object\n");
-        return ZEOK;
+    printf("#-------------------------------------------------------------------------------\n"
+           "# object\n");
+    return ZEOK;
 }
 
 zerr_t tc_object(zop_arg){

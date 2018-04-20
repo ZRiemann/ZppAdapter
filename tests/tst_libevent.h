@@ -22,21 +22,21 @@
  * , OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#ifndef _ZLIBEVENT_HPP_
-#define _ZLIBEVENT_HPP_
+#ifndef _ZTST_LIBEVENT_H_
+#define _ZTST_LIBEVENT_H_
 
 /**
- * @file libevent.hpp
+ * @file tst_libevent.h
  * @brief <A brief description of what this file is.>
  * @author Z.Riemann https://github.com/ZRiemann/
- * @date 2018-04-18 Z.Riemann found
- *
- * @par libevent open source
- *      https://github.com/libevent/libevent
- *
- * @par api wrapper
- *
- * @par http wrapper
+ * @date 2018-04-19 Z.Riemann found
  */
+#include <zsi/base/type.h>
+#include <zpp/event2/core.h>
 
-#endif /*_ZLIBEVENT_HPP_*/
+zerr_t tu_event_base(zop_arg);
+zerr_t tc_event_base(zop_arg);
+
+zerr_t tu_event2_extra(zop_arg);
+zerr_t tc_event2_extra(zop_arg);
+#endif /*_ZTST_LIBEVENT_H_*/

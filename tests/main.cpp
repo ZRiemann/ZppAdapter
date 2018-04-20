@@ -38,7 +38,7 @@
  * @par zmake tags
  * @zmake.build on;
  * @zmake.install off;
- * @zmake.link -lzsi -pthread -lstdc++;
+ * @zmake.link -lzsi -levent_extra -levent_core -pthread -lstdc++;
  * @zmake.app zpptst;
  */
 #include <stdlib.h>
@@ -51,7 +51,9 @@
 #include <zsi/app/interactive.h>
 
 #include "tst_object.h"
-//#include "tst_libevent.h"
+#include "tst_libevent.h"
+
+#include <zpp/zpp.h>
 
 static void ztrace2zpp(const char *msg, int msg_len, zptr_t hint);
 static void zregister_mission(zitac_t itac);
@@ -80,4 +82,6 @@ static void ztrace2zpp(const char *msg, int msg_len, zptr_t hint){
 #define ZREG_MIS(key) zitac_reg_mission(itac, #key, strlen(#key), tu_##key, tc_##key)
 static void zregister_mission(zitac_t itac){
     ZREG_MIS(object);
+    ZREG_MIS(event_base);
+    ZREG_MIS(event2_extra);
 }
