@@ -338,7 +338,7 @@ public:
     HttpUri(){
         uri = evhttp_uri_new();
     }
-    HttpUri(const char *source_uri, unsigned flags = 0){
+    HttpUri(const char *source_uri, unsigned flags = 0/*EVHTTP_URI_NONCONFORMANT*/){
         uri = evhttp_uri_parse_with_flags(source_uri, flags);
         if(NULL == uri){
             zerrno(ZEPARAM_INVALID);
@@ -434,32 +434,6 @@ public:
     }
     static char *Decodex(const char *uri, int decode_plus, size_t *size_out){
         return evhttp_uridecode(uri, decode_plus, size_out);
-    }
-    /**
-     * Helper function to parse out arguments in a query.
-     *
-     * Parsing a URI like
-     *
-     * http://foo.com/?q=test&s=some+thing
-     *
-     * will result in two entries in the key value queue.
-     *
-     * The first entry is: key="q", value="test"
-     * The second entry is: key="s", value="some thing"
-     *
-     * @deprecated This function is deprecated as of Libevent 2.0.9.  Use
-     * evhttp_uri_parse and evhttp_parse_query_str instead.
-     *
-     * @param uri the request URI
-     * @param headers the head of the evkeyval queue
-     * @return 0 on success, -1 on failure
-     */
-    static zerr_t ParseQuery(const char *uri, struct evkeyvalq *headers){
-        return evhttp_parse_query(uri, headers);
-    }
-    static zerr_t ParseQueryStr(const char *uri, struct evkeyvalq *headers){
-        /* uri: q=test&s=some+thing */
-        return evhttp_parse_query_str(uri, headers);
     }
     /**
      * Escape HTML character entities in a string.

@@ -46,6 +46,7 @@
 #include <string.h>
 #include <zsi/base/error.h>
 #include <zsi/base/trace.h>
+#include <zsi/base/atomic.h>
 #include <zsi/app/trace2console.h>
 #include <zsi/app/trace2file.h>
 #include <zsi/app/interactive.h>
@@ -55,6 +56,11 @@
 
 #include <zpp/zpp.h>
 
+int g_stop; /* stop flag for all threads */
+zatm32_t g_threads; /* global threads counter */
+
+static zerr_t tu_stop(zop_arg);
+static zerr_t tc_stop(zop_arg);
 static void ztrace2zpp(const char *msg, int msg_len, zptr_t hint);
 static void zregister_mission(zitac_t itac);
 
@@ -81,7 +87,18 @@ static void ztrace2zpp(const char *msg, int msg_len, zptr_t hint){
 
 #define ZREG_MIS(key) zitac_reg_mission(itac, #key, strlen(#key), tu_##key, tc_##key)
 static void zregister_mission(zitac_t itac){
+    ZREG_MIS(stop);
     ZREG_MIS(object);
-    ZREG_MIS(event_base);
+    ZREG_MIS(event2_base);
     ZREG_MIS(event2_extra);
+}
+
+static zerr_t tu_stop(zop_arg){
+    printf("# stop\t\t\t\t; 0->1: Stop all threads, 0->1: Enable threads\n");
+    return ZEOK;
+}
+static zerr_t tc_stop(zop_arg){
+    g_stop ^= 0x01;
+    zinf("set stop flag: 0x%04x, threads: %d", g_stop, g_threads);
+    return ZEOK;
 }

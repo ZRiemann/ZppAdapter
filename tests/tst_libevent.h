@@ -32,10 +32,14 @@
  * @date 2018-04-19 Z.Riemann found
  */
 #include <zsi/base/type.h>
+#include <zsi/base/atomic.h>
 #include <zpp/event2/core.h>
 
-zerr_t tu_event_base(zop_arg);
-zerr_t tc_event_base(zop_arg);
+extern int g_stop;
+extern zatm32_t g_threads;
+
+zerr_t tu_event2_base(zop_arg);
+zerr_t tc_event2_base(zop_arg);
 
 zerr_t tu_event2_extra(zop_arg);
 zerr_t tc_event2_extra(zop_arg);
