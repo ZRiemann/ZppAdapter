@@ -214,7 +214,7 @@ public:
      * @param fd -1 bufferevent_setfd()/bufferevent_socket_connect()
      *        make sure fd is non-blocking mode.
      */
-    BufferEvent(struct event_base *base, evutil_socket_t fd ,
+    BufferEvent(struct event_base *base, evutil_socket_t fd = -1,
                 enum bufferevent_options options =
                 (enum bufferevent_options)(BEV_OPT_CLOSE_ON_FREE | BEV_OPT_THREADSAFE)){
         bev = bufferevent_socket_new(base, fd, options);

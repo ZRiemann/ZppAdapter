@@ -62,12 +62,13 @@ struct RegObj{
     static int create(ZOP_ARG){
         int ret = ZOK;
         T *pa = 0;
-        pa = new T;
+        pa = new(std::nothrow) T;
+        if(!pa){
+            return ZMEM_INSUFFICIENT;
+        }
+        *out = (zvalue_t)pa;
         if(in){
             ret = pa->Serialize(in, out, hint);
-        }
-        if(pa){
-            *out = (zvalue_t)pa;
         }
         return ret;
     }

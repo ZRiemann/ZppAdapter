@@ -34,6 +34,7 @@
 #include <zsi/base/type.h>
 #include <zsi/base/atomic.h>
 #include <zpp/event2/core.h>
+#include <zpp/event2/extra.h>
 
 extern int g_stop;
 extern zatm32_t g_threads;
