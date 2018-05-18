@@ -7,9 +7,9 @@
  * @history
  *   2017-05-02  Zwp   found
  */
-#include <zit/base/error.h>
-#include <zit/base/type.h>
-#include <zit/base/atomic.h>
+#include <zsi/base/error.h>
+#include <zsi/base/type.h>
+#include <zsi/base/atomic.h>
 #include <vector>
 #include <map>
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #define ZUSE_OBJ_CNT 1 // 启用对象计数功能，可辅助排查内存泄漏
 
 #if ZUSE_OBJ_CNT
-#include <zit/base/atomic.h>
+#include <zsi/base/atomic.h>
 #endif
 
 #ifndef ZNS_ZB
@@ -33,7 +33,7 @@ public:
     int isLoad;
     Archive();
     virtual ~Archive();
-    virtual int GetData(ZOP_ARG);
+    virtual int GetData(zop_arg);
     virtual otype_t GetType();
 };
 
@@ -44,13 +44,13 @@ public:
     Object();
     virtual ~Object();
 
-    virtual int Serialize(ZOP_ARG);
-    virtual int Clone(ZOP_ARG);
-    virtual int Release(ZOP_ARG);
-    virtual int Operate(ZOP_ARG);
+    virtual int Serialize(zop_arg);
+    virtual int Clone(zop_arg);
+    virtual int Release(zop_arg);
+    virtual int Operate(zop_arg);
 
 public:
-    static int CreateObj(ZOP_ARG);
+    static int CreateObj(zop_arg);
     static std::map<otype_t, zoperate>* pdyn_map;
 #if ZUSE_OBJ_CNT
     static zatm32_t obj_cnt; // 辅助技术对象总数
@@ -59,7 +59,7 @@ public:
 
 template<typename T>
 struct RegObj{
-    static int create(ZOP_ARG){
+    static int create(zop_arg){
         int ret = ZOK;
         T *pa = 0;
         pa = new(std::nothrow) T;
@@ -126,10 +126,10 @@ public:
     Device();
     virtual ~Device();
 
-    virtual int Init(ZOP_ARG);
-    virtual int Fini(ZOP_ARG);
-    virtual int Run(ZOP_ARG);
-    virtual int Stop(ZOP_ARG);
+    virtual int Init(zop_arg);
+    virtual int Fini(zop_arg);
+    virtual int Run(zop_arg);
+    virtual int Stop(zop_arg);
 };
 ZNS_ZE
 #endif

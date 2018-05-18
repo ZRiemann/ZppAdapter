@@ -33,4 +33,7 @@
 #include "src/event2_core.cpp"
 #endif
 
+/* global definitions */
+#include "src/zpp.cpp"
+
 #endif // _ZPP_H_

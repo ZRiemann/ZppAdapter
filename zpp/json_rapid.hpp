@@ -35,130 +35,134 @@
 #include <zsi/base/error.h>
 #include <rapidjson/document.h>
 #include <rapidjson/memorystream.h>
-namespace z{
-    namespace json{
-        class RJson{
-        public:
-            RJson();
-            RJson(rapidjson::Document::AllocatorType *alloc); // Value alloc==NULL
-            ~RJson();
 
-            // 加载与保存
-            int LoadFile(const char *file);
-            int SaveFile(const char *file);
+#ifndef NSB_JSON
+#define NSB_JSON namespace z { namespace json{
+#define NSE_JSON }}
+#endif
 
-            int LoadString(const char *json, size_t len = 0); // 0-'\0'eof; !0-eof !0
-            int SaveString(std::string &str);
-            void Swap(RJson *js);
-            // 设置与获取
-            rapidjson::Document::AllocatorType *GetAllocator();
+NSB_JSON
+class RJson{
+public:
+    RJson();
+    RJson(rapidjson::Document::AllocatorType *alloc); // Value alloc==NULL
+    ~RJson();
 
-            int GetMember(const char *key, RJson *js);
-            int AddMember(const char *key, RJson *js);
-            bool DelMember(const char *key);
-            // key=NULL, return value; key!=NULL return key value;
-            int SetInt(const char *key, int32_t value);
-            int GetInt(const char *key, int32_t &value);
-            int SetUint(const char *key, uint32_t value);
-            int GetUint(const char *key, uint32_t &value);
-            int SetInt64(const char *key, int64_t value);
-            int GetInt64(const char *key, int64_t &value);
-            int SetUint64(const char *key, uint64_t value);
-            int GetUint64(const char *key, uint64_t &value);
-            int SetString(const char *key, const char *str);
-            int GetString(const char *key, std::string &str);
-            int SetDouble(const char *key, double value);
-            int GetDouble(const char *key, double &value);
-            int SetBool(const char *key, bool value);
-            int GetBool(const char *key, bool &value);
+    // 加载与保存
+    int LoadFile(const char *file);
+    int SaveFile(const char *file);
 
-            //valType:{ "Null", "False", "True", "Object", "Array", "String", "Number" };
-            enum ValueType{
-                valNull = 0,
-                valFalse,
-                valTrue,
-                valObject,
-                valArray,
-                valString,
-                valNumber,
-                statArrayBegin,
-                statArrayEnd,
-                statObjectBegin,
-                statObjectEnd
-            };
-            ValueType GetType(){return (ValueType)val->GetType();}
-            const char *GetCString(){return val->GetString();} // must string value;
-            bool IsArray(){return val->IsArray();}
-            bool IsObject(){return val->IsObject();}
-            bool IsString(){return val->IsString();}
-            bool IsNull(){return val->IsNull();}
-            bool IsNumber(){return val->IsNumber();}
-            bool IsUint(){return val->IsUint();}
-            bool IsInt(){return val->IsInt();}
-            bool IsUint64(){return val->IsUint64();}
-            bool IsInt64(){return val->IsInt64();}
-            bool IsDouble(){return val->IsDouble();}
-            // Array ; Value mast a array
-            void SetArray(){val->SetArray();}
-            void SetObject(){val->SetObject();}
-            template< typename T >
-            int PushBack(T &t){
-                val->PushBack(t, *alloc);
-                return 0;
-            }
-            int PopBack(){
-                val->PopBack();
-                return 0;
-            }
-            void SetValue(rapidjson::Value &v){val = &v;}
-            void SetAllocator(rapidjson::Document::AllocatorType *alc){alloc = alc;}
+    int LoadString(const char *json, size_t len = 0); // 0-'\0'eof; !0-eof !0
+    int SaveString(std::string &str);
+    void Swap(RJson *js);
+    // 设置与获取
+    rapidjson::Document::AllocatorType *GetAllocator();
 
-            typedef int (*CallbackEach)(ValueType vType, RJson &name, RJson &value, void *hint);
-            int ForEach(CallbackEach fun, void *hint);
-            int EachObject(CallbackEach fun, void *hint);
-            int EachArray(CallbackEach fun, void *hint);
-        public:
-            void Dump();
-            std::string &ToString(std::string &str, bool isPretty = false);
+    int GetMember(const char *key, RJson *js);
+    int AddMember(const char *key, RJson *js);
+    bool DelMember(const char *key);
+    void DelAllMembers(){val->RemoveAllMembers();}
+// key=NULL, return value; key!=NULL return key value;
+    int SetInt(const char *key, int32_t value);
+    int GetInt(const char *key, int32_t &value);
+    int SetUint(const char *key, uint32_t value);
+    int GetUint(const char *key, uint32_t &value);
+    int SetInt64(const char *key, int64_t value);
+    int GetInt64(const char *key, int64_t &value);
+    int SetUint64(const char *key, uint64_t value);
+    int GetUint64(const char *key, uint64_t &value);
+    int SetString(const char *key, const char *str);
+    int GetString(const char *key, std::string &str);
+    int SetDouble(const char *key, double value);
+    int GetDouble(const char *key, double &value);
+    int SetBool(const char *key, bool value);
+    int GetBool(const char *key, bool &value);
 
-        public:
-            bool needDel;
-            rapidjson::Value *val;
-            rapidjson::Document *doc;
-            rapidjson::Document::AllocatorType *alloc;
-        };
+//valType:{ "Null", "False", "True", "Object", "Array", "String", "Number" };
+    enum ValueType{
+        valNull = 0,
+        valFalse,
+        valTrue,
+        valObject,
+        valArray,
+        valString,
+        valNumber,
+        statArrayBegin,
+        statArrayEnd,
+        statObjectBegin,
+        statObjectEnd
+    };
+    ValueType GetType(){return (ValueType)val->GetType();}
+    const char *GetCString(){return val->GetString();} // must string value;
+    bool IsArray(){return val->IsArray();}
+    bool IsObject(){return val->IsObject();}
+    bool IsString(){return val->IsString();}
+    bool IsNull(){return val->IsNull();}
+    bool IsNumber(){return val->IsNumber();}
+    bool IsUint(){return val->IsUint();}
+    bool IsInt(){return val->IsInt();}
+    bool IsUint64(){return val->IsUint64();}
+    bool IsInt64(){return val->IsInt64();}
+    bool IsDouble(){return val->IsDouble();}
+// Array ; Value mast a array
+    void SetArray(){val->SetArray();}
+    void SetObject(){val->SetObject();}
+    template< typename T >
+    int PushBack(T &t){
+        val->PushBack(t, *alloc);
+        return 0;
     }
-}
+    int PopBack(){
+        val->PopBack();
+        return 0;
+    }
+    void SetValue(rapidjson::Value &v){val = &v;}
+    void SetAllocator(rapidjson::Document::AllocatorType *alc){alloc = alc;}
+
+    typedef int (*CallbackEach)(ValueType vType, RJson &name, RJson &value, void *hint);
+    int ForEach(CallbackEach fun, void *hint);
+    int EachObject(CallbackEach fun, void *hint);
+    int EachArray(CallbackEach fun, void *hint);
+public:
+    void Dump();
+    std::string &ToString(std::string &str, bool isPretty = false);
+
+public:
+    bool needDel;
+    rapidjson::Value *val;
+    rapidjson::Document *doc;
+    rapidjson::Document::AllocatorType *alloc;
+};
+NSE_JSON
 
 // RJson implements
 
-#include <zit/base/trace.h>
+#include <zsi/base/trace.h>
 #include <rapidjson/filewritestream.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/reader.h>
 
-#define ZTRACE_RJSON 1 // enable or disable RJson
+#define ZTRACE_RJSON 1         /**  enable or disable RJson */
+#define ZTRACE_RJSON_TITLE "[RJson]"
+extern char ztrace_level_json;
 
-#if ZTRACE_RJSON
-#define zdbg_rpd(fmt, ...) zdbgx(g_ztrace_flag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,"[RJson]", ##__VA_ARGS__)
-#define zmsg_rpd(fmt, ...) zmsgx(g_ztrace_flag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,"[RJson]", ##__VA_ARGS__)
-#define zwar_rpd(fmt, ...) zwarx(g_ztrace_flag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,"[RJson]", ##__VA_ARGS__)
-#define zerr_rpd(fmt, ...) zerrx(g_ztrace_flag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,"[RJson]", ##__VA_ARGS__)
-#define zinf_rpd(fmt, ...) zinfx(g_ztrace_flag, "[ln:%04d fn:%s]%s\t" fmt, __LINE__, __FUNCTION__,"[RJson]", ##__VA_ARGS__)
-#else
-#define zdbg_rpd(fmt, ...)
-#define zmsg_rpd(fmt, ...)
-#define zwar_rpd(fmt, ...)
-#define zerr_rpd(fmt, ...)
-#define zinf_rpd(fmt, ...)
-#endif
+#define zdbg_rpd(fmt, ...) ztrace(ztrace_level_json, ZTRACE_LEVEL_DBG, ZTRACE_RJSON_TITLE, \
+        "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
+#define zmsg_rpd(fmt, ...) ztrace(ztrace_level_json, ZTRACE_LEVEL_MSG, ZTRACE_RJSON_TITLE, \
+        "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
+#define zwar_rpd(fmt, ...) ztrace(ztrace_level_json, ZTRACE_LEVEL_WAR, ZTRACE_RJSON_TITLE, \
+        "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
+#define zerr_rpd(fmt, ...) ztrace(ztrace_level_json, ZTRACE_LEVEL_ERR, ZTRACE_RJSON_TITLE, \
+        "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
+#define zinf_rpd(fmt, ...) ztrace(ztrace_level_json, ZTRACE_LEVEL_INF, ZTRACE_RJSON_TITLE, \
+        "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
 
 inline z::json::RJson::RJson(){
     doc = new(std::nothrow) rapidjson::Document;
     if(!doc){
-        // ZERRC(ZMEM_INSUFFICIENT);
+        zerrno(ZEMEM_INSUFFICIENT);
         val = NULL;
         needDel = false;
         alloc = NULL;
@@ -167,7 +171,7 @@ inline z::json::RJson::RJson(){
         val = doc;
         needDel = true;
     }
-    //zdbg_rpd("RJson() val<%p>", val);
+    zdbg_rpd("RJson() val<%p>", val);
 }
 
 inline z::json::RJson::RJson(rapidjson::Document::AllocatorType *alc){
@@ -175,7 +179,7 @@ inline z::json::RJson::RJson(rapidjson::Document::AllocatorType *alc){
         // new Member
         val = new(std::nothrow) rapidjson::Value;
         if(!val){
-            //ZERRC(ZMEM_INSUFFICIENT);
+            zerrno(ZEMEM_INSUFFICIENT);
             needDel = false;
             alloc = NULL;
         }else{
@@ -189,14 +193,14 @@ inline z::json::RJson::RJson(rapidjson::Document::AllocatorType *alc){
         needDel = false;
     }
     doc = NULL;
-    //zdbg_rpd("RJson(alc<%p>) val<%p>", alc, val);
+    zdbg_rpd("RJson(alc<%p>) val<%p>", alc, val);
 }
 
 inline z::json::RJson::~RJson(){
     if(needDel){
         doc ? delete(doc) : delete(val);
     }
-    //zdbg_rpd("~RJson() val<%p>", val);
+    zdbg_rpd("~RJson() val<%p>", val);
 }
 
 
@@ -205,14 +209,14 @@ inline void z::json::RJson::Swap(z::json::RJson *js){
 }
 
 inline int z::json::RJson::LoadFile(const char *file){
-    int ret = ZPARAM_INVALID;
+    int ret = ZEPARAM_INVALID;
     FILE* fp = NULL;
     do{
         if(!file || !doc){
             break;
-        }//else{
-        //    zmsg_rpd("LoadFile(%s)", file);
-        //}
+        }else{
+            zmsg_rpd("LoadFile(%s)", file);
+        }
 #if ZSYS_WINDOWS
         fp = fopen(file, "rb");
 #else
@@ -230,26 +234,26 @@ inline int z::json::RJson::LoadFile(const char *file){
         }else{
             Dump();
         }
-        ret = ZOK;
+        ret = ZEOK;
     }while(0);
-  
+
     if(fp){
         fclose(fp);
     }
-  
-    //ZERRCX(ret);
+
+    zerrno(ret);
     return ret;
 }
 
 inline int z::json::RJson::SaveFile(const char *file){
-    int ret = ZPARAM_INVALID;
+    int ret = ZEPARAM_INVALID;
     FILE *fp = NULL;
     do{
         if(!file || !doc){
             break;
-        }//else{
-        //    zmsg_rpd("SaveFile(%s)", file);
-        //}
+        }else{
+            zmsg_rpd("SaveFile(%s)", file);
+        }
 #ifdef ZSYS_WINDOWS
         fp = fopen(file, "wb");
 #else
@@ -265,21 +269,21 @@ inline int z::json::RJson::SaveFile(const char *file){
         rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
         rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
         doc->Accept(writer);
-        ret = ZOK;
+        ret = ZEOK;
     }while(0);
-  
+
     if(fp){
         fclose(fp);
     }
-    //ZERRCX(ret);
+    zerrno(ret);
     return ret;
 }
 
 inline int z::json::RJson::LoadString(const char *json, size_t len){
-    int ret = ZFAIL;
+    int ret = ZEFAIL;
     do{
         if(!json || !doc){
-            ret = ZPARAM_INVALID;
+            ret = ZEPARAM_INVALID;
             break;
         }
         if(len){
@@ -289,28 +293,28 @@ inline int z::json::RJson::LoadString(const char *json, size_t len){
             doc->Parse(json);
         }
         if(!doc->IsObject()){
-            ret = ZPARAM_INVALID;
+            ret = ZEPARAM_INVALID;
             break;
         }else{
             Dump();
         }
-        ret = ZOK;
+        ret = ZEOK;
     }while(0);
 
-    //ZERRC(ret);
+    zerrno(ret);
     return ret;
 }
 
 inline int z::json::RJson::SaveString(std::string &str){
-    if(!doc){
-        return ZPARAM_INVALID;
+    if(!val){
+        return ZEPARAM_INVALID;
     }
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     doc->Accept(writer);
     //str = buffer.GetString();
     str.assign(buffer.GetString(), buffer.GetSize());
-    return ZOK;
+    return ZEOK;
 }
 
 
@@ -319,17 +323,14 @@ inline rapidjson::Document::AllocatorType *z::json::RJson::GetAllocator(){
 }
 
 inline void z::json::RJson::Dump(){
-    if(!val || !(g_ztrace_flag & ZTRACE_FLAG_INF)){
-        return;
-    }
     rapidjson::StringBuffer buffer;
     //Writer<StringBuffer> writer(buffer);
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
     val->Accept(writer);
-    zinf_rpd("\n%s", buffer.GetString());
+    zinf_rpd("\nsize<%d>\n%s", buffer.GetSize(), buffer.GetString());
 }
 inline std::string &z::json::RJson::ToString(std::string &str, bool isPretty){
-    if(!val || !(g_ztrace_flag & ZTRACE_FLAG_INF)){
+    if(!val){
         str.clear();
         return str;
     }
@@ -348,9 +349,9 @@ inline int z::json::RJson::SetInt(const char *key, int32_t value){
     if(!key){
         if(val){
             val->SetInt(value);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -358,12 +359,12 @@ inline int z::json::RJson::SetInt(const char *key, int32_t value){
         if(itr->value.IsInt()){
             itr->value.SetInt(value);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), value, *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetInt(const char *key, int32_t &value){
@@ -371,28 +372,28 @@ inline int z::json::RJson::GetInt(const char *key, int32_t &value){
         // just get value, has no key
         if(val->IsInt()){
             value = val->GetInt();
-            return ZOK;
+            return ZEOK;
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
     // get value by key.
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsInt()){
         value = itr->value.GetInt();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::SetUint(const char *key, uint32_t value){
     if(!key){
         if(val){
             val->SetUint(value);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -400,12 +401,12 @@ inline int z::json::RJson::SetUint(const char *key, uint32_t value){
         if(itr->value.IsUint()){
             itr->value.SetUint(value);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), value, *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetUint(const char *key, uint32_t &value){
@@ -414,26 +415,26 @@ inline int z::json::RJson::GetUint(const char *key, uint32_t &value){
         if(val->IsUint()){
             value = val->GetUint();
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
 
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsUint()){
         value = itr->value.GetUint();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::SetInt64(const char *key, int64_t value){
     if(!key){
         if(val){
             val->SetInt64(value);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -441,12 +442,12 @@ inline int z::json::RJson::SetInt64(const char *key, int64_t value){
         if(itr->value.IsInt64()){
             itr->value.SetInt64(value);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), value, *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetInt64(const char *key, int64_t &value){
@@ -455,26 +456,26 @@ inline int z::json::RJson::GetInt64(const char *key, int64_t &value){
         if(val->IsInt64()){
             value = val->GetInt64();
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
 
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsInt64()){
         value = itr->value.GetInt64();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::SetUint64(const char *key, uint64_t value){
     if(!key){
         if(val){
             val->SetUint64(value);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -482,12 +483,12 @@ inline int z::json::RJson::SetUint64(const char *key, uint64_t value){
         if(itr->value.IsUint64()){
             itr->value.SetUint64(value);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), value, *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetUint64(const char *key, uint64_t &value){
@@ -496,30 +497,30 @@ inline int z::json::RJson::GetUint64(const char *key, uint64_t &value){
         if(val->IsUint64()){
             value = val->GetUint64();
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
 
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsUint64()){
         value = itr->value.GetUint64();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::SetString(const char *key, const char *str){
     if(!alloc){
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
-  
+
     if(!key){
         if(val){
             val->SetString(str, *alloc);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -529,12 +530,12 @@ inline int z::json::RJson::SetString(const char *key, const char *str){
             //val->RemoveMember(itr);
             //val->AddMember(rapidjson::Value(key, *alloc).Move(), rapidjson::Value(str, *alloc).Move(), *alloc);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), rapidjson::Value(str, *alloc).Move(), *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetString(const char *key, std::string &str){
@@ -543,26 +544,26 @@ inline int z::json::RJson::GetString(const char *key, std::string &str){
         if(val->IsString()){
             str = val->GetString();
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
 
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsString()){
         str = itr->value.GetString();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::SetDouble(const char *key, double value){
     if(!key){
         if(val){
             val->SetDouble(value);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -570,12 +571,12 @@ inline int z::json::RJson::SetDouble(const char *key, double value){
         if(itr->value.IsDouble()){
             itr->value.SetDouble(value);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), value, *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetDouble(const char *key, double &value){
@@ -584,26 +585,26 @@ inline int z::json::RJson::GetDouble(const char *key, double &value){
         if(val->IsDouble()){
             value = val->GetDouble();
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
 
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsDouble()){
         value = itr->value.GetDouble();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::SetBool(const char *key, bool value){
     if(!key){
         if(val){
             val->SetBool(value);
-            return ZOK;
+            return ZEOK;
         }
-        return ZPARAM_INVALID;
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -611,12 +612,12 @@ inline int z::json::RJson::SetBool(const char *key, bool value){
         if(itr->value.IsBool()){
             itr->value.SetBool(value);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), value, *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline int z::json::RJson::GetBool(const char *key, bool &value){
@@ -625,7 +626,7 @@ inline int z::json::RJson::GetBool(const char *key, bool &value){
         if(val->IsBool()){
             value = val->GetBool();
         }else{
-            return ZPARAM_INVALID;
+            return ZEPARAM_INVALID;
         }
     }
 
@@ -633,31 +634,31 @@ inline int z::json::RJson::GetBool(const char *key, bool &value){
     rapidjson::Value::ConstMemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd() && itr->value.IsBool()){
         value = itr->value.GetBool();
-        return ZOK;
+        return ZEOK;
     }
-    //ZERRC(ZNOT_EXIST);
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::GetMember(const char *key, RJson *rj){
     if(!key){
-        //ZERRC(ZPARAM_INVALID);
-        return ZPARAM_INVALID;
+        zerrno(ZEPARAM_INVALID);
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
     if (itr != val->MemberEnd()){
         rj->val = &(itr->value);
-        return ZOK;
+        return ZEOK;
     }
-    //zerr_rpd("%s %s", key, zstrerr(ZNOT_EXIST));
-    return ZNOT_EXIST;
+    zerrno(ZENOT_EXIST);
+    return ZENOT_EXIST;
 }
 
 inline int z::json::RJson::AddMember(const char *key, RJson *js){
     if(!key || !alloc){
-        ZERRC(ZPARAM_INVALID);
-        return ZPARAM_INVALID;
+        zerrno(ZEPARAM_INVALID);
+        return ZEPARAM_INVALID;
     }
 
     rapidjson::Value::MemberIterator itr = val->FindMember(key);
@@ -666,12 +667,12 @@ inline int z::json::RJson::AddMember(const char *key, RJson *js){
             val->EraseMember(itr);
             val->AddMember(rapidjson::Value(key, *alloc).Move(), js->val->Move(), *alloc);
         }else{
-            return ZCAST_FAIL;
+            return ZECAST_FAIL;
         }
     }else{
         val->AddMember(rapidjson::Value(key, *alloc).Move(), js->val->Move(), *alloc);
     }
-    return ZOK;
+    return ZEOK;
 }
 
 inline bool z::json::RJson::DelMember(const char *key){
@@ -679,7 +680,7 @@ inline bool z::json::RJson::DelMember(const char *key){
 }
 
 inline int z::json::RJson::EachObject(CallbackEach fun, void *hint){
-    int ret = ZOK;
+    int ret = ZEOK;
     z::json::RJson jsValue(NULL);
     z::json::RJson jsName(NULL);
     for(rapidjson::Value::MemberIterator itr = val->MemberBegin(); itr != val->MemberEnd(); ++itr){
@@ -704,36 +705,36 @@ inline int z::json::RJson::EachObject(CallbackEach fun, void *hint){
             fun(statObjectEnd, jsName, jsValue, hint);
             break;
         default:
-            ret = ZNOT_SUPPORT;
+            ret = ZENOT_SUPPORT;
             break;
         }
-        if(ZOK != ret){
+        if(ZEOK != ret){
             break;
         }
     }
-    ZERRCX(ret);
+    zerrno(ret);
     return ret;
 }
 
 inline int z::json::RJson::EachArray(CallbackEach fun, void *hint){
-    int ret = ZOK;
+    int ret = ZEOK;
     z::json::RJson js(NULL);
     rapidjson::SizeType size = val->Size();
     for(rapidjson::SizeType idx = 0; idx<size; idx++){
         js.SetValue((*val)[idx]);
-        if(ZOK != (ret = js.ForEach(fun, hint))){
+        if(ZEOK != (ret = js.ForEach(fun, hint))){
             break;
         }
     }
-    ZERRCX(ret);
+    zerrno(ret);
     return ret;
 }
 
 inline int z::json::RJson::ForEach(CallbackEach fun, void *hint){
-    int ret = ZOK;
+    int ret = ZEOK;
     z::json::RJson js(NULL);
     z::json::RJson jsName(NULL);
-    if(!val){return ZPARAM_INVALID;} // assert
+    if(!val){return ZEPARAM_INVALID;} // assert
     js.val = val;
     switch(GetType()){
     case valNumber: // Number
@@ -754,10 +755,18 @@ inline int z::json::RJson::ForEach(CallbackEach fun, void *hint){
         fun(statObjectEnd, jsName, js,hint);
         break;
     default:
-        ret = ZNOT_SUPPORT;
+        ret = ZENOT_SUPPORT;
         break;
     }
-    ZERRCX(ret);
+    zerrno(ret);
     return ret;
 }
+
+/**
+ * @fn z::json::RJson::DelAllMembers()
+ * @brief This function do not deallocate memory in the object,
+ *        i.e. the capacity is unchanged.
+ * @note  avoid delete and new elements;
+ *
+ */
 #endif
