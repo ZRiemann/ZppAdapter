@@ -33,6 +33,10 @@
 #include "src/event2_core.cpp"
 #endif
 
+#ifdef _ZEV2_REST_H_
+#include "src/rest.cpp"
+#endif
+
 /* global definitions */
 #include "src/zpp.cpp"
 

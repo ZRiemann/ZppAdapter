@@ -241,13 +241,13 @@ function parse_zmake_target(){
     # append target to all
     while :; do
         # zmake_tgt = target1
-        zmake_tgt=${zmake_value%%:*}
+         zmake_tgt=${zmake_value%% *}
         # zmake_value = target2:...
-        zmake_value=${zmake_value#*:}
+        zmake_value=${zmake_value#* }
 
         # test new target
-        [[ "$zmake_target" =~ "$zmake_tgt" ]] || {
-            zmake_target+=" $zmake_tgt"
+        [[ "$zmake_target" =~ " $zmake_tgt " ]] || {
+            zmake_target+=" $zmake_tgt "
         }
 
         # target : source.o
@@ -351,10 +351,12 @@ function parse_zmake_type(){
     zmake_set_link=0
 
     while :; do
+        zmake_old_tag=${zmake_tag}
         zmake_tag=${zmake_tag#*.}
         zmake_type=${zmake_tag%% *}
 
         [ "$zmake_tag" = "$zmake_type" ] && break
+        [ "${zmake_old_tag=}" = "${zmake_tag}" ] && break;
 
         zmake_tag=${zmake_tag#* }
         zmake_value=${zmake_tag%%;*}
