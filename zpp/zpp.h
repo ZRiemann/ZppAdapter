@@ -21,7 +21,7 @@
 #include "src/object.cpp"
 #endif
 
-#ifdef _ZPP_ZMQ_H_
+#ifdef _ZPP_ZMQ_HPP_
 #include "src/zmq.cpp"
 #endif
 

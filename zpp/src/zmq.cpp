@@ -35,10 +35,10 @@
 
 ZNS_ZMQB
 
-ctx_t Socket::s_ctx;
-atmc_t Socket::total;
+zptr_t Socket::s_ctx;
+zatm32_t Socket::total;
 
-Socket::InitCtx(){
+zerr_t Socket::InitCtx(){
     if(NULL == s_ctx){
         s_ctx = zmq_ctx_new();
         /* set linger timeout 0 */
@@ -47,7 +47,7 @@ Socket::InitCtx(){
     }
 }
 
-Socket::FiniCtx(){
+zerr_t Socket::FiniCtx(){
     zdbg("Begin destroy ZeroMQ context...");
     if(-1 == zmq_ctx_destroy(s_ctx)){
         zmq_error();
@@ -55,7 +55,7 @@ Socket::FiniCtx(){
     zdbg("Destroy ZeroMQ context down.");
 }
 
-err_t Socket::SetCtx(ctx_t ctx){
+zerr_t Socket::SetCtx(zptr_t ctx){
     zdbg("set zmq context<%p>", ctx);
     s_ctx = ctx;
 }
@@ -64,7 +64,7 @@ Socket::Socket(int type){
     if(NULL == (sock = zmq_socket(s_ctx, type))){
         zmq_error();
     }
-    zatmc_inc(&total);
+    zatm_inc(&total);
     zdbg("sock<%p type: %d total:%d>",
                 sock, type, total);
 }
@@ -74,7 +74,7 @@ Socket::~Socket(){
         delete conns[i];
         zdbg("delete conn_info[%d]", i);
     }
-    zatmc_dec(&total);
+    zatm_dec(&total);
     zdbg("close sock<%p total:%d>",
                 sock, total);
     if(sock && (-1 == zmq_close(sock))){
@@ -82,14 +82,14 @@ Socket::~Socket(){
     }
 }
 
-err_t Socket::Close(){
+zerr_t Socket::Close(){
     if(-1 == zmq_close(sock)){
         zmq_error();
     }
     zdbg("close socket<%p>", sock);
     sock = NULL;
 }
-err_t Socket::Bind(const char *endpoint){
+zerr_t Socket::Bind(const char *endpoint){
     if(-1 == zmq_bind(sock, endpoint)){
         zmq_error();
         zdbg("bind<endp:%s> FAILED", endpoint);
@@ -99,7 +99,7 @@ err_t Socket::Bind(const char *endpoint){
     return ZEOK;
 }
 
-err_t Socket::Unbind(const char *endpoint){
+zerr_t Socket::Unbind(const char *endpoint){
     if(-1 == zmq_unbind(sock, endpoint)){
         zmq_error();
         zdbg("unbind<endp:%s> FAILED", endpoint);
@@ -108,7 +108,7 @@ err_t Socket::Unbind(const char *endpoint){
     zdbg("unbind<endp:%s>", endpoint);
     return ZEOK;
 }
-err_t Socket::Connect(const char *endpoint){
+zerr_t Socket::Connect(const char *endpoint){
     if(-1 == zmq_connect(sock, endpoint)){
         zmq_error();
         return ZEFAIL;
@@ -119,20 +119,20 @@ err_t Socket::Connect(const char *endpoint){
     return ZEOK;
 }
 
-err_t Socket::Connect(const char *endpoint, const char *id, int len){
+zerr_t Socket::Connect(const char *endpoint, const char *id, int len){
     if(-1 == zmq_connect(sock, endpoint)){
         zmq_error();
         return ZEFAIL;
     }else{
         Conn(endpoint, id, len);
-        zorg("connect<endp:%s id: ", endpoint);
-        zbin(id, len);
-        zorg(">\n");
+        ztrace_org("connect<endp:%s id: ", endpoint);
+        ztrace_bin(id, len);
+        ztrace_org(">\n");
     }
     return ZEOK;
 }
 
-err_t Socket::Disconnect(const char *endpoint){
+zerr_t Socket::Disconnect(const char *endpoint){
     if(-1 == zmq_disconnect(sock, endpoint)){
         zmq_error();
         return ZEFAIL;
@@ -143,14 +143,14 @@ err_t Socket::Disconnect(const char *endpoint){
     return ZEOK;
 }
 
-err_t Socket::GetOpt(int option_name, void *option_value, size_t *option_len){
+zerr_t Socket::GetOpt(int option_name, void *option_value, size_t *option_len){
     if(-1 == zmq_getsockopt(sock, option_name, option_value, option_len)){
         zmq_error();
         return ZEFAIL;
     }
     return ZEOK;
 }
-err_t Socket::SetOpt(int option_name, const void *option_value, size_t option_len){
+zerr_t Socket::SetOpt(int option_name, const void *option_value, size_t option_len){
     if(-1 == zmq_setsockopt(sock, option_name, option_value, option_len)){
         zmq_error();
         return ZEFAIL;
@@ -158,26 +158,26 @@ err_t Socket::SetOpt(int option_name, const void *option_value, size_t option_le
     return ZEOK;
 }
 
-err_t Socket::SetHwm(int is_send, int hwm){
+zerr_t Socket::SetHwm(int is_send, int hwm){
     return SetOpt(is_send ? ZMQ_SNDHWM : ZMQ_RCVHWM, &hwm, sizeof(hwm));
 }
 
-err_t Socket::SetLinger(int linger){
+zerr_t Socket::SetLinger(int linger){
     return SetOpt(ZMQ_LINGER, &linger, sizeof(linger));
 }
 
-err_t Socket::SetId(const char *id, int len){
+zerr_t Socket::SetId(const char *id, int len){
     std::string str(id, len);
     zdbg("set socket<id: %s len: %d>", str.c_str(), str.size());
     return SetOpt(ZMQ_IDENTITY, id, len);
 }
 
-err_t Socket::SetId(std::string &id){
+zerr_t Socket::SetId(std::string &id){
     zdbg("set socket<id: %s len: %d>", id.c_str(), id.size());
     return SetOpt(ZMQ_IDENTITY, id.data(), id.size());
 }
 
-err_t Socket::LazyPiratReq(Message &req, Message &rep, int timeout_ms, int trys){
+zerr_t Socket::LazyPiratReq(Message &req, Message &rep, int timeout_ms, int trys){
     int ret = ZETIMEOUT;
     int rc;
 
@@ -211,8 +211,8 @@ err_t Socket::LazyPiratReq(Message &req, Message &rep, int timeout_ms, int trys)
     return ret;
 }
 
-err_t Socket::Reconnect(){
-    err_t ret = ZEOK;
+zerr_t Socket::Reconnect(){
+    zerr_t ret = ZEOK;
     int size = conns.size();
 
     if(size){
@@ -237,8 +237,8 @@ err_t Socket::Reconnect(){
     return ret;
 }
 
-err_t Socket::SetConnStat(int stat, void *id, int len){
-    err_t ret = ZEOK;
+zerr_t Socket::SetConnStat(int stat, void *id, int len){
+    zerr_t ret = ZEOK;
     std::string str((char*)id, len);
     for(int i = 0; i < conns.size(); ++i){
         if(0 == conns[i]->id.compare(str)){
@@ -250,8 +250,8 @@ err_t Socket::SetConnStat(int stat, void *id, int len){
     zerrno(ret);
     return ret;
 }
-err_t Socket::SetConnStat(int stat, const char *endp){
-    err_t ret = ZENOT_EXIST;
+zerr_t Socket::SetConnStat(int stat, const char *endp){
+    zerr_t ret = ZENOT_EXIST;
     std::string str(endp);
     for(int i = 0; i < conns.size(); ++i){
         if(0 == conns[i]->endp.compare(str)){
@@ -264,8 +264,8 @@ err_t Socket::SetConnStat(int stat, const char *endp){
     return ret;
 }
 
-err_t Socket::Conn(const char *endpoint, const char *id, int len){
-    err_t ret = ZEOK;
+zerr_t Socket::Conn(const char *endpoint, const char *id, int len){
+    zerr_t ret = ZEOK;
     bool exist = false;
     for(int i = 0; i < conns.size(); ++i){
         if(0 == conns[i]->endp.compare(endpoint)){
@@ -288,8 +288,8 @@ err_t Socket::Conn(const char *endpoint, const char *id, int len){
     return ret;
 }
 
-err_t Socket::Disconn(const char *endpoint, const char *id, int len){
-    err_t ret = ZEOK;
+zerr_t Socket::Disconn(const char *endpoint, const char *id, int len){
+    zerr_t ret = ZEOK;
     for(int i = 0; i < conns.size(); ++i){
         if(0 == conns[i]->endp.compare(endpoint)){
             delete conns[i];
@@ -299,19 +299,19 @@ err_t Socket::Disconn(const char *endpoint, const char *id, int len){
     }
 }
 
-err_t Socket::SubAll(){
+zerr_t Socket::SubAll(){
     return SetOpt(ZMQ_SUBSCRIBE, "", 0);
 }
 
-err_t Socket::Subscribe(const char *filter, int len){
+zerr_t Socket::Subscribe(const char *filter, int len){
     return SetOpt(ZMQ_SUBSCRIBE, filter, len);
 }
 
-err_t Socket::Unsubscribe(const char *filter, int len){
+zerr_t Socket::Unsubscribe(const char *filter, int len){
     return SetOpt(ZMQ_UNSUBSCRIBE, filter, len);
 }
 
-err_t Socket::Monitor(const char *endpoint, int events){
+zerr_t Socket::Monitor(const char *endpoint, int events){
     zdbg("monitor<endp: %s>", endpoint);
     return zmq_socket_monitor(sock, endpoint, events);
 }
