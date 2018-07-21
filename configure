@@ -55,6 +55,7 @@ zmake tags:
   @zmake.link <-l...>;              Librarys needs to link
   @zmake.depso <lib1 lib2 ...>;     Application depedent dynamic library targets in current Makefile
   @zmake.depar <lib1 lib2 ...>;     Application depedent archive targets in current Makefile
+  @zamke.cflag <flags ...>;         Add more flags to file, like -std=c++11
   @zmake.app <name>;                Attach file to target by application name, -o name
   @zmake.lib <name>;                Attach file to target by library name, -o libname.so.version,libname.a
   @zmake.ar <name>;                 Attach file to target by archive name,
@@ -349,6 +350,7 @@ function parse_zmake_type(){
     zmake_set_install=0
     zmake_set_build=0
     zmake_set_link=0
+    zmake_cflag=
 
     while :; do
         zmake_old_tag=${zmake_tag}
@@ -378,6 +380,8 @@ function parse_zmake_type(){
             depar)
                 zmake_set_depar=1
                 zmake_depar=${zmake_value};;
+            cflag)
+                zmake_cflag=${zmake_value};;
 
             lib | app | ar)
                 # source.o : source.c depedents.h
@@ -407,12 +411,12 @@ function parse_zmake_type(){
                 echo >> $zmake_obj
                 echo "$obj_name : ${path_name}$dependent_file" >> $zmake_obj
                 if [ "app" = "$zmake_type" -o "ar" = "$zmake_type" ]; then
-                    printf "\t\$(CC) \$(OPTM) \$(CFLAG) -c -o \$@ $path_name\n" >> $zmake_obj
+                    printf "\t\$(CC) \$(OPTM) ${zmake_cflag} \$(CFLAG) -c -o \$@ $path_name\n" >> $zmake_obj
                 else
-                    printf "\t\$(CC) \$(OPTM) \$(CFLAG) -fPIC -c -o \$@ $path_name\n" >> $zmake_obj
+                    printf "\t\$(CC) \$(OPTM) ${zmake_cflag} \$(CFLAG) -fPIC -c -o \$@ $path_name\n" >> $zmake_obj
                     echo >> $zmake_obj
                     echo "${obj_name}.ar : ${path_name}$dependent_file" >> $zmake_obj
-                    printf "\t\$(CC) \$(OPTM) \$(CFLAG) -c -o \$@ $path_name\n" >> $zmake_obj
+                    printf "\t\$(CC) \$(OPTM) ${zmake_cflag} \$(CFLAG) -c -o \$@ $path_name\n" >> $zmake_obj
                 fi
                 # all : target ...
                 # target : obj_name ...

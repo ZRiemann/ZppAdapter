@@ -28,7 +28,7 @@
  * @author Z.Riemann https://github.com/ZRiemann/
  * @date 2018-04-19 Z.Riemann found
  *
- * @zmake.app zpptst;
+ * zmake.app zpptst;
  */
 
 #include <stdio.h>

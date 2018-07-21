@@ -38,7 +38,8 @@
  * @par zmake tags
  * @zmake.build on;
  * @zmake.install off;
- * @zmake.link -lzsi -levent_extra -levent_core -pthread -lstdc++;
+ * zmake.link -lzsi -levent_extra -levent_core -pthread -lstdc++;
+ * @zmake.link -lzsi -pthread -lstdc++;
  * @zmake.app zpptst;
  */
 #include <stdlib.h>
@@ -52,7 +53,7 @@
 #include <zsi/app/interactive.h>
 
 #include "tst_object.h"
-#include "tst_libevent.h"
+//#include "tst_libevent.h"
 
 #include <zpp/zpp.h>
 
@@ -89,8 +90,10 @@ static void ztrace2zpp(const char *msg, int msg_len, zptr_t hint){
 static void zregister_mission(zitac_t itac){
     ZREG_MIS(stop);
     ZREG_MIS(object);
+#ifdef _ZTST_LIBEVENT_H_
     ZREG_MIS(event2_base);
     ZREG_MIS(event2_extra);
+#endif
 }
 
 static zerr_t tu_stop(zop_arg){
