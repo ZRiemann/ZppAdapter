@@ -86,7 +86,7 @@ static void ztrace2zpp(const char *msg, int msg_len, zptr_t hint){
     ztrace2file(msg, msg_len, hint);
 }
 
-#define ZREG_MIS(key) zitac_reg_mission(itac, #key, strlen(#key), tu_##key, tc_##key)
+#define ZREG_MIS(key) zitac_reg_mission(itac, #key, strlen(#key), tu_##key, tc_##key, NULL)
 static void zregister_mission(zitac_t itac){
     ZREG_MIS(stop);
     ZREG_MIS(object);
