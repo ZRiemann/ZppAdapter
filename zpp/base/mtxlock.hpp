@@ -18,6 +18,34 @@ namespace z{
             zmtx_unlock(mtx);
         }
     };
+
+    class Mutex{
+        zmtx_t mtx;
+    public:
+        Mutex(){
+            zmtx_init(&mtx);
+        }
+        ~Mutex(){
+            zmtx_fini(&mtx);
+        }
+        void Lock(){
+            zmtx_lock(&mtx);
+        }
+        void Unlock(){
+            zmtx_unlock(&mtx);
+        }
+    }
+    class MutexLock{
+        Mutex &mtx;
+    public:
+        MutexLock(Mutex &_mtx)
+            :mtx(_mtx){
+            mtx.Lock();
+        }
+        ~MutexLock(){
+            mtx.Unlock();
+        }
+    };
 }
 
 #endif

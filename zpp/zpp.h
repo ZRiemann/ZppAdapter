@@ -11,7 +11,6 @@
  * @history
  *   2017-07-18  ZRiemann found
  */
-#include <zsi/base/trace.h>
 
 #ifdef _ZPP_PB2JSON_H_
 #include "src/pb2json.cpp"
@@ -35,6 +34,10 @@
 
 #ifdef _ZEV2_REST_H_
 #include "src/rest.cpp"
+#endif
+
+#ifdef _ZPP_NNG_REPLY_H_
+#include "src/reply.cpp"
 #endif
 
 /* global definitions */

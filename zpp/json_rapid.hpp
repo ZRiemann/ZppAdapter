@@ -144,7 +144,8 @@ NSE_JSON
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/reader.h>
 
-#define ZTRACE_RJSON 1         /**  enable or disable RJson */
+#define ZTRACE_RJSON 0         /**  enable or disable RJson */
+#if ZTRACE_RJSON
 #define ZTRACE_RJSON_TITLE "[RJson]"
 extern char ztrace_level_json;
 
@@ -158,7 +159,13 @@ extern char ztrace_level_json;
         "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
 #define zinf_rpd(fmt, ...) ztrace(ztrace_level_json, ZTRACE_LEVEL_INF, ZTRACE_RJSON_TITLE, \
         "[%03d %s@%s]\t" fmt, __LINE__, __FUNCTION__, ZTRACE_FILE, ##__VA_ARGS__)
-
+#else
+#define zdbg_rpd(fmt, ...)
+#define zmsg_rpd(fmt, ...)
+#define zwar_rpd(fmt, ...)
+#define zerr_rpd(fmt, ...)
+#define zinf_rpd(fmt, ...)
+#endif
 inline z::json::RJson::RJson(){
     doc = new(std::nothrow) rapidjson::Document;
     if(!doc){
