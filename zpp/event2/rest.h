@@ -47,7 +47,7 @@
 
 NSB_EV2
 
-#define REST_DUMP 0
+#define REST_DUMP 1
 
 /**
  * @brief http request and response class

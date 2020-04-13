@@ -68,6 +68,7 @@ static void done_cb(struct evhttp_request *req, void *arg){
 static int header_cb(struct evhttp_request *req, void *arg){
     //zdbg("header_cb dump req:");
     //((Request*)arg)->Dump();
+    return 0;
 }
 
 static void chunked_cb(struct evhttp_request *req, void *arg){
@@ -107,6 +108,7 @@ zerr_t Request::DumpKeyVals(struct evkeyvalq *kv){
     TAILQ_FOREACH(header, kv, next){
         ztrace_org("%s : %s\n", header->key, header->value);
     }
+    return 0;
 }
 
 zerr_t Request::Dump(){
@@ -337,11 +339,14 @@ zerr_t RestClient::DispatchJson(Request &req, evhttp_cmd_type cmd){
     req.cmd = cmd;
     req.base = base;
     if(!req.req){
-        req.req = evhttp_request_new(done_cb, (zptr_t)&req);
+        if(NULL != (req.req = evhttp_request_new(done_cb, (zptr_t)&req))){
+            evhttp_request_set_header_cb(req.req, header_cb);
+            evhttp_request_set_chunked_cb(req.req, chunked_cb);
+            evhttp_request_set_error_cb(req.req, error_cb);
+        }else{
+            return ZEMEM_INSUFFICIENT;
+        }
     }
-    evhttp_request_set_header_cb(req.req, header_cb);
-    evhttp_request_set_chunked_cb(req.req, chunked_cb);
-    evhttp_request_set_error_cb(req.req, error_cb);
 
     zmsg("\n%s-Begin:%s\nrequest:%s", str_cmd, req.uri, req.request.c_str());
     req.MakeRequest(conn);

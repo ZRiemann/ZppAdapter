@@ -94,6 +94,7 @@ void EventBase::DumpStatus(const char *fname){
     FILE *pf = fopen(fname, "w");
     if(pf){
         event_base_dump_events(base, pf);
+        fclose(pf);
     }else{
         zerrno(ZEPARAM_INVALID);
     }

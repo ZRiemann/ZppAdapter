@@ -4,6 +4,8 @@
  * @license MIT
  * @file zpp/nng/reply.hpp
  * @note nng asynchronous reply server
+ *
+ * @node Reply is discarded, please use <zsi/3rd/nng/nng.h>
  */
 #include <string>
 
@@ -45,12 +47,13 @@ public:
     OnTask onRequest;
     OnTask onError;
     ztpl_t *thread_pool;
+    void *hint;
 
     friend class Task;
 public:
     Reply();
     ~Reply();
-    zerr_t Listen(const std::string &url, int parallel, OnTask onReq, OnTask onErr, ztpl_t *thread_pool = NULL);
+    zerr_t Listen(const std::string &url, int parallel, OnTask onReq, OnTask onErr, void *hint, ztpl_t *thread_pool = NULL);
 };
 NSE_NNG
 
