@@ -56,8 +56,10 @@ NSB_EV2
 
 
 static void done_cb(struct evhttp_request *req, void *arg){
-    //zinf("request donw.");
+    zinf("request donw.");
     Request* request = (Request*)arg;
+    request->req = req;
+    request->Dump();
 #if 0
     struct timeval tv = {1, 0};
     event_base_loopexit(request->base, &tv);
@@ -65,17 +67,18 @@ static void done_cb(struct evhttp_request *req, void *arg){
     event_base_loopbreak(request->base);
 #endif
 }
+
 static int header_cb(struct evhttp_request *req, void *arg){
-    //zdbg("header_cb dump req:");
-    //((Request*)arg)->Dump();
+    zdbg("header_cb dump req:");
+    ((Request*)arg)->Dump();
     return 0;
 }
 
 static void chunked_cb(struct evhttp_request *req, void *arg){
     Request *argreq = (Request*)arg;
     int len;
-    //zdbg("chunk_cb dump req:");
-    //argreq->Dump();
+    zdbg("chunk_cb dump req:");
+    argreq->Dump();
     struct evbuffer *input_buffer = evhttp_request_get_input_buffer(req);
     len = evbuffer_get_length(input_buffer);
     if(len){
@@ -350,6 +353,7 @@ zerr_t RestClient::DispatchJson(Request &req, evhttp_cmd_type cmd){
 
     zmsg("\n%s-Begin:%s\nrequest:%s", str_cmd, req.uri, req.request.c_str());
     req.MakeRequest(conn);
+    req.AddHeader("Host", "192.168.1.112:8280");
     req.AddHeader("Content-Type", "application/json");
     req.AddHeader("cache-control", "no-cache");
     req.AddHeader("User-Agent", "zpp/restful");
@@ -368,6 +372,5 @@ zerr_t RestClient::DispatchJson(Request &req, evhttp_cmd_type cmd){
          "reply: %s\n",
          str_cmd, req.errcode, req.reason.c_str(), req.response.c_str());
     return ZEOK;
-
 }
 NSE_EV2

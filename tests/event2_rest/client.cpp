@@ -14,11 +14,14 @@ int main(int argc, char **argv){
 
     z::ev2::RestClient cli;
     z::ev2::Request req;
-
-    //cli.Connect("192.168.1.112", 8280);
-    cli.Connect("127.0.0.1", 8088);
-
-    req.uri = "framework-admin/api/v1/test";
+    if (argc > 1) {
+        //http://192.168.1.112:8280/framework-admin/api/v1/test
+        cli.Connect("192.168.1.112", 8280);
+        req.uri = "/framework-admin/api/v1/test";
+    }else{
+        cli.Connect("127.0.0.1", 8088);
+        req.uri = "/api/v1/test";
+    }
     req.request = "{\"hello\":\"world!\"}";
     req.response = "";
     cli.Add(req);
